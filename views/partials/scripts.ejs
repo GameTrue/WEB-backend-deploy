@@ -1,0 +1,41 @@
+<script>
+  // JavaScript для обработки меню-бургера
+  document.addEventListener('click', function(event) {
+    if (event.target.closest('#burger')) {
+      const menu = document.getElementById('menu');
+      menu.classList.toggle('active');
+    }
+  });
+
+  // Функция для загрузки и инициализации карты
+  window.addEventListener('load', function() {
+    loadScript('https://api-maps.yandex.ru/2.1/?lang=ru_RU')
+      .then(() => ymaps.ready(initMap))
+      .catch(error => console.error('Ошибка загрузки Yandex Maps API:', error));
+    
+    function loadScript(url) {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = url;
+        script.async = true;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error('Не удалось загрузить скрипт: ' + url));
+        document.head.appendChild(script);
+      });
+    }
+
+    function initMap() {
+      var myMap = new ymaps.Map("map", {
+        center: [51.533, 46.034],
+        zoom: 15,
+        controls: ['zoomControl']
+      });
+      var myPlacemark = new ymaps.Placemark([51.533, 46.034], {
+        hintContent: 'Наша компания',
+        balloonContent: 'г.Саратов, ул. Колотушкина, д.7'
+      });
+      myMap.geoObjects.add(myPlacemark);
+    }
+  });
+</script>
+<script src="/js/activeLink.js"></script>

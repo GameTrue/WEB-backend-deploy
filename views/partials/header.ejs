@@ -1,0 +1,66 @@
+<header>
+  <div class="logo">
+    <img src="https://i.imgur.com/oxu8p7O.png" alt="CourseMan">
+  </div>
+
+  <nav>
+    <div class="top-home-burger" id="burger">
+      <span class="spaned"></span>
+      <span class="spaned"></span>
+      <span class="spaned"></span>
+    </div>
+    <ul id="menu">
+      <li class="<%= currentPath === '/' ? 'active-link' : '' %>"><a href="/">Main</a></li>
+      <li class="<%= currentPath === '/courses' ? 'active-link' : '' %>"><a href="/courses">Courses</a></li>
+      <li class="<%= currentPath === '/lessons' ? 'active-link' : '' %>"><a href="/lessons">Lessons</a></li>
+    </ul>
+  </nav>
+
+  <div class="auth-buttons">
+    <div class="auth-loading">Загрузка...</div>
+  </div>
+</header>
+
+<!-- Модальное окно входа -->
+<div id="login-modal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Вход</h2>
+    <form id="login-form">
+      <div class="form-group">
+        <label for="login-email">Email:</label>
+        <input type="email" id="login-email" name="email" required>
+      </div>
+      <div class="form-group">
+        <label for="login-password">Пароль:</label>
+        <input type="password" id="login-password" name="password" required>
+      </div>
+      <button type="submit" class="submit-btn">Войти</button>
+    </form>
+    <div class="error-message" id="login-error"></div>
+  </div>
+</div>
+
+<!-- Модальное окно регистрации -->
+<div id="register-modal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Регистрация</h2>
+    <form id="register-form">
+      <div class="form-group">
+        <label for="register-name">Имя:</label>
+        <input type="text" id="register-name" name="name" required>
+      </div>
+      <div class="form-group">
+        <label for="register-email">Email:</label>
+        <input type="email" id="register-email" name="email" required>
+      </div>
+      <div class="form-group">
+        <label for="register-password">Пароль:</label>
+        <input type="password" id="register-password" name="password" required>
+      </div>
+      <button type="submit" class="submit-btn">Зарегистрироваться</button>
+    </form>
+    <div class="error-message" id="register-error"></div>
+  </div>
+</div>
