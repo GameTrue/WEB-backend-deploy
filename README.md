@@ -11,7 +11,7 @@
 
 ## Ссылка на развернутое приложение
 
-[Ссылка на приложение на Render](https://ваш-проект.onrender.com)
+[Ссылка на приложение на Render](https://web-backend-deploy.onrender.com/)
 
 ## Запуск проекта
 
