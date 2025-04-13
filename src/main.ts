@@ -5,9 +5,17 @@ import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 import * as expressLayouts from 'express-ejs-layouts';
 import * as methodOverride from 'method-override';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // Включаем валидацию данных
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    transform: true,
+    forbidNonWhitelisted: true,
+  }));
 
   // Подключаем cookie-parser
   app.use(cookieParser());

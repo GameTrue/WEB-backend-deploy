@@ -1,0 +1,31 @@
+<section class="main-media-section">
+    <h2>MainMediaSection</h2>
+    <!-- Slider main container -->
+    <div class="swiper">
+        <!-- Additional required wrapper -->
+        <div class="swiper-wrapper">
+            <!-- Slides -->
+            <%- include('../../../partials/slider-item', {
+                imgSrc: 'https://i.imgur.com/T4DYzJO.jpeg',
+                imgAlt: 'First Image',
+                title: 'MainMedia_1',
+                content: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Знания<sup>2</sup> = <span class="font-ital">успех</span>'
+            }) %>
+            
+            <%- include('../../../partials/slider-item', {
+                imgSrc: 'https://i.imgur.com/VeQJzgz.png',
+                imgAlt: 'Second Image',
+                title: 'MainMedia_2',
+                content: 'Lorem ipsum odor amet, consectetuer adipiscing elit. Praesent a sollicitudin quam sapien hac congue penatibus.'
+            }) %>
+            
+            <!-- ... другие слайды ... -->
+        </div>
+        <!-- If we need pagination -->
+        <div class="swiper-pagination"></div>
+    
+        <!-- If we need navigation buttons -->
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+    </div>
+</section>

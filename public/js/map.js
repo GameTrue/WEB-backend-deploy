@@ -1,8 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
-  // Находим элемент карты на странице
   const mapElement = document.getElementById('map');
   
-  // Если элемента карты нет на странице, не инициализируем карту
   if (!mapElement) return;
   
   // Функция для загрузки скрипта Яндекс Карт

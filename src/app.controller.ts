@@ -7,7 +7,7 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  @Render('index')
+  @Render('pages/home/index')
   getIndexPage(@Req() req: Request) {
     return { 
       title: 'CourseMan',
@@ -16,7 +16,7 @@ export class AppController {
   }
 
   @Get('courses')
-  @Render('courses')
+  @Render('pages/courses/index')
   getCoursesPage(@Req() req: Request) {
     return { 
       title: 'CourseMan - Courses',
@@ -25,19 +25,10 @@ export class AppController {
   }
 
   @Get('lessons')
-  @Render('lessons')
+  @Render('pages/lessons/index')
   getLessonsPage(@Req() req: Request) {
     return { 
       title: 'CourseMan - Lessons',
-      currentPath: req.path
-    };
-  }
-
-  @Get('auth')
-  @Render('auth')
-  getAuthPage(@Req() req: Request) {
-    return { 
-      title: 'Авторизация - CourseMan',
       currentPath: req.path
     };
   }

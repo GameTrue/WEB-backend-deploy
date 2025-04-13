@@ -21,10 +21,10 @@ export class Session {
   @Column({ default: true })
   active: boolean;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, name: 'user_agent' })
   userAgent: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, name: 'ip_address' })
   ipAddress: string;
 
   // Связи

@@ -1,0 +1,29 @@
+<% contentFor('body') %>
+<div class="container">
+    <div style="flex: 1;">
+        <%- include('./components/filter') %>
+        <%- include('./components/admin-panel') %>
+        
+        <div style="display: flex; justify-content: center; max-width: 300px;">
+            <button type="button" class="admin-button" id="panel-btn-admin">Админ панель</button>
+        </div>
+    </div>
+
+    <section class="courses">
+        <h2>Курсы</h2>
+        <div id="preloader">Загрузка данных...</div>
+        <div class="courses-grid" id="courses-grid">
+            <template id="course-template">
+                <%- include('./components/course-card') %>
+            </template>
+        </div>
+        <div style="display: flex;">
+            <button type="button" class="admin-button-edit" id="edit-btn-admin">Редактировать</button>
+        </div>
+    </section>
+</div>
+
+<% contentFor('style') %>
+
+<% contentFor('script') %>
+<script src="/js/courses.js"></script>

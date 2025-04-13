@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-  // Получаем элементы модальных окон
   const loginModal = document.getElementById('login-modal');
   const registerModal = document.getElementById('register-modal');
   const loginBtn = document.getElementById('login-btn');
@@ -15,14 +14,12 @@ document.addEventListener('DOMContentLoaded', function() {
   const loginError = document.getElementById('login-error');
   const registerError = document.getElementById('register-error');
 
-  // Показываем модальное окно входа
   if (loginBtn) {
     loginBtn.addEventListener('click', function() {
       loginModal.style.display = 'block';
     });
   }
 
-  // Показываем модальное окно регистрации
   if (registerBtn) {
     registerBtn.addEventListener('click', function() {
       registerModal.style.display = 'block';
@@ -34,91 +31,73 @@ document.addEventListener('DOMContentLoaded', function() {
     btn.addEventListener('click', function() {
       loginModal.style.display = 'none';
       registerModal.style.display = 'none';
-      // Сбрасываем сообщения об ошибках
-      loginError.textContent = '';
-      registerError.textContent = '';
-      // Сбрасываем формы
+
+      if (loginError) loginError.textContent = '';
+      if (registerError) registerError.textContent = '';
+      
       if (loginForm) loginForm.reset();
       if (registerForm) registerForm.reset();
     });
   });
 
-  // Закрываем модальные окна при клике вне их области
   window.addEventListener('click', function(event) {
     if (event.target === loginModal) {
       loginModal.style.display = 'none';
-      loginError.textContent = '';
+      if (loginError) loginError.textContent = '';
       if (loginForm) loginForm.reset();
     }
     if (event.target === registerModal) {
       registerModal.style.display = 'none';
-      registerError.textContent = '';
+      if (registerError) registerError.textContent = '';
       if (registerForm) registerForm.reset();
     }
   });
 
-  function generateToken(length = 32) {
-    const array = new Uint8Array(length);
-    window.crypto.getRandomValues(array);
-    return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
-  }
+  // Функция для выполнения HTTP запросов
+  async function fetchApi(url, options = {}) {
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...options.headers
+        },
+        credentials: 'include' 
+      });
 
-  async function hashPassword(password) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-  }
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Неизвестная ошибка' }));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
 
-  function setCookie(name, value, days) {
-    const expires = new Date(Date.now() + days * 86400000).toUTCString();
-    document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
-  }
-
-  function getCookie(name) {
-    const val = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
-    return val ? decodeURIComponent(val.pop()) : null;
-  }
-
-  function deleteCookie(name) {
-    setCookie(name, '', -1);
+      return await response.json();
+    } catch (error) {
+      console.error('API error:', error);
+      throw error;
+    }
   }
 
   if (loginForm) {
     loginForm.addEventListener('submit', async function(e) {
       e.preventDefault();
-      loginError.textContent = '';
+      
+      if (loginError) loginError.textContent = '';
       
       const email = this.email.value.trim();
       const password = this.password.value;
-      const hashedPassword = await hashPassword(password);
       
-      // Получаем пользователей из localStorage
-      const users = JSON.parse(localStorage.getItem('users')) || [];
-      const user = users.find(u => u.email === email && u.password === hashedPassword);
-      
-      if (user) {
-        // Генерируем случайный токен
-        const token = generateToken();
+      try {
+        await fetchApi('/auth/login', {
+          method: 'POST',
+          body: JSON.stringify({ email, password })
+        });
         
-        // Сохраняем токен в localStorage с привязкой к пользователю
-        const authTokens = JSON.parse(localStorage.getItem('auth_tokens')) || {};
-        authTokens[token] = {
-          userId: user.email,
-          name: user.name,
-          expires: Date.now() + 7 * 86400000 // 7 дней
-        };
-        localStorage.setItem('auth_tokens', JSON.stringify(authTokens));
+        if (loginModal) loginModal.style.display = 'none';
         
-        // Устанавливаем только токен в cookie
-        setCookie('auth_token', token, 7);
-        loginModal.style.display = 'none';
         
-        // Перезагружаем страницу для обновления UI
         window.location.reload();
-      } else {
-        loginError.textContent = 'Неверный email или пароль';
+      } catch (error) {
+        if (loginError) loginError.textContent = error.message || 'Неверный email или пароль';
       }
     });
   }
@@ -127,69 +106,47 @@ document.addEventListener('DOMContentLoaded', function() {
   if (registerForm) {
     registerForm.addEventListener('submit', async function(e) {
       e.preventDefault();
-      registerError.textContent = '';
+      
+      if (registerError) registerError.textContent = '';
       
       const name = this.name.value.trim();
       const email = this.email.value.trim();
       const password = this.password.value;
       
       if (password.length < 6) {
-        registerError.textContent = 'Пароль должен содержать минимум 6 символов';
+        if (registerError) registerError.textContent = 'Пароль должен содержать минимум 6 символов';
         return;
       }
       
-      const hashedPassword = await hashPassword(password);
-      
-      // Получаем пользователей из localStorage
-      const users = JSON.parse(localStorage.getItem('users')) || [];
-      
-      // Проверяем, существует ли пользователь с таким email
-      if (users.find(u => u.email === email)) {
-        registerError.textContent = 'Пользователь с таким email уже существует';
-        return;
+      try {
+        await fetchApi('/auth/register', {
+          method: 'POST',
+          body: JSON.stringify({ name, email, password })
+        });
+        
+        if (registerModal) registerModal.style.display = 'none';
+        
+        window.location.reload();
+      } catch (error) {
+        if (registerError) registerError.textContent = error.message || 'Ошибка при регистрации';
       }
-      
-      // Добавляем нового пользователя
-      users.push({ name, email, password: hashedPassword });
-      localStorage.setItem('users', JSON.stringify(users));
-      
-      // Генерируем случайный токен
-      const token = generateToken();
-      
-      // Сохраняем токен в localStorage с привязкой к пользователю
-      const authTokens = JSON.parse(localStorage.getItem('auth_tokens')) || {};
-      authTokens[token] = {
-        userId: email,
-        name: name,
-        expires: Date.now() + 7 * 86400000 // 7 дней
-      };
-      localStorage.setItem('auth_tokens', JSON.stringify(authTokens));
-      
-      // Устанавливаем только токен в cookie
-      setCookie('auth_token', token, 7);
-      registerModal.style.display = 'none';
-      
-      // Перезагружаем страницу для обновления UI
-      window.location.reload();
     });
   }
 
   // Обработка выхода из аккаунта
   if (logoutBtn) {
-    logoutBtn.addEventListener('click', function() {
-      // Получаем текущий токен
-      const token = getCookie('auth_token');
-      
-      // Удаляем токен из localStorage
-      if (token) {
-        const authTokens = JSON.parse(localStorage.getItem('auth_tokens')) || {};
-        delete authTokens[token];
-        localStorage.setItem('auth_tokens', JSON.stringify(authTokens));
+    logoutBtn.addEventListener('click', async function() {
+      try {
+        await fetchApi('/auth/logout', {
+          method: 'POST'
+        });
+        
+        window.location.reload();
+      } catch (error) {
+        console.error('Ошибка при выходе:', error);
+        
+        window.location.reload();
       }
-      
-      // Удаляем куки
-      deleteCookie('auth_token');
-      window.location.reload();
     });
   }
 });

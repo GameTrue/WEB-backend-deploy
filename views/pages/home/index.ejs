@@ -1,0 +1,21 @@
+<% contentFor('body') %>
+<section class="main-content">
+    <div class="main-content-container">
+        <h1>Main Content</h1>
+        <span class="main-subcontent">Start making yourself better</span>
+        <div class="main-buttons">
+            <button class="button-blue main-button">Learn everything</button>
+            <button class="button-purple main-button">Teach</button>
+        </div>
+    </div>
+</section>
+
+<%- include('./components/slider') %>
+<%- include('./components/media-links') %>
+
+<% contentFor('style') %>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
+<% contentFor('script') %>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="/js/home.js"></script>
