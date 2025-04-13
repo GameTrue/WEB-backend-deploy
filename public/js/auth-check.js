@@ -30,6 +30,13 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchApi('/auth/me')
       .then(userData => {
         if (userData) {
+          // Сохраняем информацию о пользователе для использования в других скриптах
+          window.currentUser = {
+            name: userData.name,
+            email: userData.email,
+            role: userData.role
+          };
+          
           authButtons.innerHTML = `
             <div class="user-panel">
               <span class="user-greeting">Привет, ${userData.name}!</span>
@@ -42,14 +49,20 @@ document.addEventListener('DOMContentLoaded', function() {
             logoutBtn.addEventListener('click', async function() {
               try {
                 await fetchApi('/auth/logout', { method: 'POST' });
-                window.location.reload();
+
+                window.location.href = '/';
+                // window.location.reload();
               } catch (error) {
                 console.error('Ошибка при выходе:', error);
-                window.location.reload();
+
+                window.location.href = '/';
+                // window.location.reload();
               }
             });
           }
         } else {
+          window.currentUser = null;
+          
           authButtons.innerHTML = `
             <button class="login-btn main-button" id="login-btn">Login</button>
             <button class="register-btn main-button" id="register-btn">Register</button>
@@ -74,6 +87,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       })
       .catch(() => {
+        window.currentUser = null;
+        
         authButtons.innerHTML = `
           <button class="login-btn main-button" id="login-btn">Login</button>
           <button class="register-btn main-button" id="register-btn">Register</button>

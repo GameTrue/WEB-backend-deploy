@@ -1,0 +1,124 @@
+<% contentFor('body') %>
+<div class="error-container">
+  <div class="error-content">
+    <div class="error-icon">401</div>
+    <h1>Доступ ограничен</h1>
+    <p>Для просмотра этой страницы необходимо войти в систему или у вас недостаточно прав.</p>
+    <div class="error-buttons">
+      <button class="error-button login" id="error-login-btn">Войти</button>
+      <button class="error-button register" id="error-register-btn">Зарегистрироваться</button>
+    </div>
+    <a href="/" class="error-link">Вернуться на главную</a>
+  </div>
+</div>
+
+<% contentFor('style') %>
+<style>
+  .error-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+    background-color: var(--color-background-light);
+    padding: 20px;
+  }
+  
+  .error-content {
+    text-align: center;
+    background-color: white;
+    border-radius: 10px;
+    padding: 40px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-width: 500px;
+    width: 100%;
+    color: var(--color-text-dark);
+  }
+  
+  .error-icon {
+    font-size: 100px;
+    font-weight: bold;
+    color: var(--color-purple);
+    margin-bottom: 20px;
+    text-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+    font-family: "Gabarito", sans-serif;
+  }
+  
+  .error-content h1 {
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+  
+  .error-content p {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  
+  .error-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .error-button {
+    padding: 12px 30px;
+    border-radius: 30px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: "Gabarito", sans-serif;
+  }
+  
+  .error-button.login {
+    background-color: var(--color-grey-light);
+    color: var(--color-text-dark);
+  }
+  
+  .error-button.register {
+    background-color: var(--color-purple);
+    color: white;
+  }
+  
+  .error-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+  }
+  
+  .error-link {
+    display: inline-block;
+    color: var(--color-blue);
+    text-decoration: none;
+    margin-top: 10px;
+    font-size: 14px;
+  }
+  
+  .error-link:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<% contentFor('script') %>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Привязываем клик на кнопки к открытию модальных окон
+    const loginBtn = document.getElementById('error-login-btn');
+    const registerBtn = document.getElementById('error-register-btn');
+    
+    if (loginBtn) {
+      loginBtn.addEventListener('click', function() {
+        const loginModal = document.getElementById('login-modal');
+        if (loginModal) loginModal.style.display = 'block';
+      });
+    }
+    
+    if (registerBtn) {
+      registerBtn.addEventListener('click', function() {
+        const registerModal = document.getElementById('register-modal');
+        if (registerModal) registerModal.style.display = 'block';
+      });
+    }
+  });
+</script>

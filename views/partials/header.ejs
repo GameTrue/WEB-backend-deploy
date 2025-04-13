@@ -10,9 +10,18 @@
       <span class="spaned"></span>
     </div>
     <ul id="menu">
-      <li class="<%= currentPath === '/' ? 'active-link' : '' %>"><a href="/">Main</a></li>
-      <li class="<%= currentPath === '/courses' ? 'active-link' : '' %>"><a href="/courses">Courses</a></li>
-      <li class="<%= currentPath === '/lessons' ? 'active-link' : '' %>"><a href="/lessons">Lessons</a></li>
+      <li class="<%= typeof currentPath !== 'undefined' && currentPath === '/' ? 'active-link' : '' %>"><a href="/">Main</a></li>
+      <li class="<%= typeof currentPath !== 'undefined' && currentPath === '/courses' ? 'active-link' : '' %>"><a href="/courses">Courses</a></li>
+      
+      <% if (typeof user !== 'undefined' && user) { %>
+        <% if (user.role === 'admin') { %>
+          <li class="<%= typeof currentPath !== 'undefined' && currentPath === '/admin' ? 'active-link' : '' %>"><a href="/admin">Admin</a></li>
+        <% } else if (user.role === 'teacher') { %>
+          <li class="<%= typeof currentPath !== 'undefined' && currentPath === '/my-courses' ? 'active-link' : '' %>"><a href="/my-courses">My courses</a></li>
+        <% } else if (user.role === 'student') { %>
+          <li class="<%= typeof currentPath !== 'undefined' && currentPath === '/lessons' ? 'active-link' : '' %>"><a href="/lessons">Lessons</a></li>
+        <% } %>
+      <% } %>
     </ul>
   </nav>
 

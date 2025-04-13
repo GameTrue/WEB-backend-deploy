@@ -143,11 +143,13 @@ document.addEventListener('DOMContentLoaded', function() {
           method: 'POST'
         });
         
-        window.location.reload();
+        window.location.href = '/';
+        // window.location.reload();
       } catch (error) {
         console.error('Ошибка при выходе:', error);
         
-        window.location.reload();
+        window.location.href = '/';
+        // window.location.reload();
       }
     });
   }
