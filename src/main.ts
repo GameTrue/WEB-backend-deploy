@@ -3,17 +3,28 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
+import * as expressLayouts from 'express-ejs-layouts';
+import * as methodOverride from 'method-override';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   // Подключаем cookie-parser
   app.use(cookieParser());
-
-  // Настройка шаблонизатора EJS
-  app.setBaseViewsDir(join(__dirname, '..', 'views'));
+  
+  // Добавляем поддержку method-override для HTTP методов
+  app.use(methodOverride('_method'));
+  
+  // Настройка шаблонизатора EJS с layouts
+  app.use(expressLayouts);
   app.setViewEngine('ejs');
-
+  app.setBaseViewsDir(join(__dirname, '..', 'views'));
+  
+  // Конфигурация express-ejs-layouts
+  app.set('layout', 'layouts/main');
+  app.set('layout extractScripts', true);
+  app.set('layout extractStyles', true);
+  
   // Настройка статических файлов
   app.useStaticAssets(join(__dirname, '..', 'public'));
   

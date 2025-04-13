@@ -1,95 +1,83 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <%- include('partials/head') %>
-</head>
-<body>
-    <%- include('partials/header') %>
+<% contentFor('style') %>
+<!-- Place for course-specific styles -->
 
-    <main>
-        <div class="container">
-            <div style="flex: 1;">
-                <aside class="filter-column" id="filter-form-panel">
-                    <h2>Фильтры</h2>
-                    <form id='filter-course-form' action="#" method="get">
-                        <label for="category">Категория:</label>
-                        <select id="category" name="category">
-                            <option value="all">Все</option>
-                            <option value="programming">Программирование</option>
-                            <option value="design">Дизайн</option>
-                            <option value="marketing">Маркетинг</option>
-                        </select>
+<% contentFor('script') %>
+<script src="/js/courses.js"></script>
 
-                        <label for="level">Уровень:</label>
-                        <select id="level" name="level">
-                            <option value="all">Все</option>
-                            <option value="beginner">Начинающий</option>
-                            <option value="intermediate">Средний</option>
-                            <option value="advanced">Продвинутый</option>
-                        </select>
-                    </form>
+<% contentFor('body') %>
+<div class="container">
+    <div style="flex: 1;">
+        <aside class="filter-column" id="filter-form-panel">
+            <h2>Фильтры</h2>
+            <form id='filter-course-form' action="#" method="get">
+                <label for="category">Категория:</label>
+                <select id="category" name="category">
+                    <option value="all">Все</option>
+                    <option value="programming">Программирование</option>
+                    <option value="design">Дизайн</option>
+                    <option value="marketing">Маркетинг</option>
+                </select>
 
-                    <button type="submit" class="filter-button" id="filter-btn">Применить</button>
-                </aside>
+                <label for="level">Уровень:</label>
+                <select id="level" name="level">
+                    <option value="all">Все</option>
+                    <option value="beginner">Начинающий</option>
+                    <option value="intermediate">Средний</option>
+                    <option value="advanced">Продвинутый</option>
+                </select>
+            </form>
 
-                <aside class="filter-column admin-panel" id="filter-admin-panel">
-                    <h2>Добавить</h2>
-                    <form id="add-course-form" action="#" method="post">
-                        <label for="course-name">Название:</label>
-                        <input id="course-name" name="course-name">
+            <button type="submit" class="filter-button" id="filter-btn">Применить</button>
+        </aside>
 
-                        <label for="course-author">Автор:</label>
-                        <input id="course-author" name="course-author">
+        <aside class="filter-column admin-panel" id="filter-admin-panel">
+            <h2>Добавить</h2>
+            <form id="add-course-form" action="#" method="post">
+                <label for="course-name">Название:</label>
+                <input id="course-name" name="course-name">
 
-                        <label for="course-category">Уровень:</label>
-                        <select id="course-category" name="course-category">
-                            <option value="programming">Программирование</option>
-                            <option value="design">Дизайн</option>
-                            <option value="marketing">Маркетинг</option>
-                        </select>
+                <label for="course-author">Автор:</label>
+                <input id="course-author" name="course-author">
 
-                        <label for="course-level">Уровень:</label>
-                        <select id="course-level" name="course-level">
-                            <option value="beginner">Начинающий</option>
-                            <option value="intermediate">Средний</option>
-                            <option value="advanced">Продвинутый</option>
-                        </select>
-                    </form>
+                <label for="course-category">Уровень:</label>
+                <select id="course-category" name="course-category">
+                    <option value="programming">Программирование</option>
+                    <option value="design">Дизайн</option>
+                    <option value="marketing">Маркетинг</option>
+                </select>
 
-                    <button type="button" class="filter-button" id="submit-btn-admin">Применить</button>
-                </aside>
-                <div style="display: flex; justify-content: center; max-width: 300px;">
-                    <button type="button" class="admin-button" id="panel-btn-admin">Админ панель</button>
-                </div>
-            </div>
+                <label for="course-level">Уровень:</label>
+                <select id="course-level" name="course-level">
+                    <option value="beginner">Начинающий</option>
+                    <option value="intermediate">Средний</option>
+                    <option value="advanced">Продвинутый</option>
+                </select>
+            </form>
 
-            <section class="courses">
-                <h2>Курсы</h2>
-                <div id="preloader">Загрузка данных...</div>
-                <div class="courses-grid" id="courses-grid">
-                    <template id="course-template">
-                        <div class="course-card">
-                            <div class="course-card-flex">
-                                <span class="course-card-name"></span>
-                                <input type="text" name="course-card-name" placeholder="Введите текст..." class="course-card-input">
-                                <span class="course-card-author"></span>
-                                <input type="text" name="course-card-author" placeholder="Введите текст..." class="course-card-input course-card-author">
-                            </div>
-                        </div>
-                    </template>
-                </div>
-                <div style="display: flex;">
-                    <button type="button" class="admin-button-edit" id="edit-btn-admin">Редактировать</button>
-                </div>
-            </section>
+            <button type="button" class="filter-button" id="submit-btn-admin">Применить</button>
+        </aside>
+        <div style="display: flex; justify-content: center; max-width: 300px;">
+            <button type="button" class="admin-button" id="panel-btn-admin">Админ панель</button>
         </div>
-    </main>
+    </div>
 
-    <%- include('partials/footer') %>
-
-    <%- include('partials/scripts') %>
-    <script src="/js/courses.js"></script>
-    <script src="/js/auth-modal.js"></script>
-    <script src="/js/auth-check.js"></script>
-</body>
-</html>
+    <section class="courses">
+        <h2>Курсы</h2>
+        <div id="preloader">Загрузка данных...</div>
+        <div class="courses-grid" id="courses-grid">
+            <template id="course-template">
+                <div class="course-card">
+                    <div class="course-card-flex">
+                        <span class="course-card-name"></span>
+                        <input type="text" name="course-card-name" placeholder="Введите текст..." class="course-card-input">
+                        <span class="course-card-author"></span>
+                        <input type="text" name="course-card-author" placeholder="Введите текст..." class="course-card-input course-card-author">
+                    </div>
+                </div>
+            </template>
+        </div>
+        <div style="display: flex;">
+            <button type="button" class="admin-button-edit" id="edit-btn-admin">Редактировать</button>
+        </div>
+    </section>
+</div>

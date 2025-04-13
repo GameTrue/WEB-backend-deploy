@@ -1,97 +1,84 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <%- include('partials/head') %>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-</head>
-<body>
-    <%- include('partials/header') %>
-
-    <section class="main-content">
-        <div class="main-content-container">
-            <h1>Main Content</h1>
-            <span class="main-subcontent">Start making yourself better</span>
-            <div class="main-buttons">
-                <button class="button-blue main-button">Learn everything</button>
-                <button class="button-purple main-button">Teach</button>
-            </div>
+<% contentFor('body') %>
+<section class="main-content">
+    <div class="main-content-container">
+        <h1>Main Content</h1>
+        <span class="main-subcontent">Start making yourself better</span>
+        <div class="main-buttons">
+            <button class="button-blue main-button">Learn everything</button>
+            <button class="button-purple main-button">Teach</button>
         </div>
-    </section>
+    </div>
+</section>
 
-    <section class="main-media-section">
-        <h2>MainMediaSection</h2>
-        <!-- Slider main container -->
-        <div class="swiper">
-            <!-- Additional required wrapper -->
-            <div class="swiper-wrapper">
-                <!-- Slides -->
-                <%- include('partials/slider-item', {
-                    imgSrc: 'https://i.imgur.com/T4DYzJO.jpeg',
-                    imgAlt: 'First Image',
-                    title: 'MainMedia_1',
-                    content: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Знания<sup>2</sup> = <span class="font-ital">успех</span>'
-                }) %>
-                
-                <%- include('partials/slider-item', {
-                    imgSrc: 'https://i.imgur.com/VeQJzgz.png',
-                    imgAlt: 'Second Image',
-                    title: 'MainMedia_2',
-                    content: 'Lorem ipsum odor amet, consectetuer adipiscing elit. Praesent a sollicitudin quam sapien hac congue penatibus.'
-                }) %>
-                
-                <%- include('partials/slider-item', {
-                    imgSrc: 'https://i.imgur.com/RFC1yMt.png',
-                    imgAlt: 'Third Image',
-                    title: 'MainMedia_3',
-                    content: 'Lorem ipsum odor amet, consectetuer adipiscing elit. Maximus inceptos auctor placerat volutpat donec. Taciti bibendum penatibus euismod quisque et eget.'
-                }) %>
-                
-                <%- include('partials/slider-item', {
-                    imgSrc: 'https://i.imgur.com/B5ecc76.jpeg',
-                    imgAlt: 'Fourth Image',
-                    title: 'MainMedia_4',
-                    content: 'Lorem ipsum odor amet, consectetuer adipiscing elit. Laoreet risus suscipit, turpis quis semper taciti nisl rutrum enim. Fusce neque cubilia consectetur semper sagittis porttitor tempus?'
-                }) %>
-                
-                <%- include('partials/slider-item', {
-                    imgSrc: 'https://i.imgur.com/TWsadwL.jpeg',
-                    imgAlt: 'Fifth Image',
-                    title: 'MainMedia_5',
-                    content: 'Lorem ipsum odor amet, consectetuer adipiscing elit. Nisi eu ornare commodo curae lectus suscipit. Gravida ullamcorper maecenas sapien mi mattis egestas finibus nisi suspendisse. Sollicitudin mollis himenaeos eget mauris eu tempor maximus neque. Non platea commodo pellentesque aliquam, hac nec.'
-                }) %>
-            </div>
-            <!-- If we need pagination -->
-            <div class="swiper-pagination"></div>
-        
-            <!-- If we need navigation buttons -->
-            <div class="swiper-button-prev"></div>
-            <div class="swiper-button-next"></div>
+<section class="main-media-section">
+    <h2>MainMediaSection</h2>
+    <!-- Slider main container -->
+    <div class="swiper">
+        <!-- Additional required wrapper -->
+        <div class="swiper-wrapper">
+            <!-- Slides -->
+            <%- include('partials/slider-item', {
+                imgSrc: 'https://i.imgur.com/T4DYzJO.jpeg',
+                imgAlt: 'First Image',
+                title: 'MainMedia_1',
+                content: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Знания<sup>2</sup> = <span class="font-ital">успех</span>'
+            }) %>
+            
+            <%- include('partials/slider-item', {
+                imgSrc: 'https://i.imgur.com/VeQJzgz.png',
+                imgAlt: 'Second Image',
+                title: 'MainMedia_2',
+                content: 'Lorem ipsum odor amet, consectetuer adipiscing elit. Praesent a sollicitudin quam sapien hac congue penatibus.'
+            }) %>
+            
+            <%- include('partials/slider-item', {
+                imgSrc: 'https://i.imgur.com/RFC1yMt.png',
+                imgAlt: 'Third Image',
+                title: 'MainMedia_3',
+                content: 'Lorem ipsum odor amet, consectetuer adipiscing elit. Maximus inceptos auctor placerat volutpat donec. Taciti bibendum penatibus euismod quisque et eget.'
+            }) %>
+            
+            <%- include('partials/slider-item', {
+                imgSrc: 'https://i.imgur.com/B5ecc76.jpeg',
+                imgAlt: 'Fourth Image',
+                title: 'MainMedia_4',
+                content: 'Lorem ipsum odor amet, consectetuer adipiscing elit. Laoreet risus suscipit, turpis quis semper taciti nisl rutrum enim. Fusce neque cubilia consectetur semper sagittis porttitor tempus?'
+            }) %>
+            
+            <%- include('partials/slider-item', {
+                imgSrc: 'https://i.imgur.com/TWsadwL.jpeg',
+                imgAlt: 'Fifth Image',
+                title: 'MainMedia_5',
+                content: 'Lorem ipsum odor amet, consectetuer adipiscing elit. Nisi eu ornare commodo curae lectus suscipit. Gravida ullamcorper maecenas sapien mi mattis egestas finibus nisi suspendisse. Sollicitudin mollis himenaeos eget mauris eu tempor maximus neque. Non platea commodo pellentesque aliquam, hac nec.'
+            }) %>
         </div>
-    </section>
-
-    <%- include('partials/media-links') %>
+        <!-- If we need pagination -->
+        <div class="swiper-pagination"></div>
     
-    <%- include('partials/footer') %>
+        <!-- If we need navigation buttons -->
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+    </div>
+</section>
 
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <%- include('partials/scripts') %>
-    <script src="/js/auth-modal.js"></script>
-    <script src="/js/auth-check.js"></script>
+<%- include('partials/media-links') %>
 
-    <!-- Initialize Swiper -->
-    <script>
-        const swiper = new Swiper('.swiper', {
-            direction: 'horizontal',
-            loop: true,
-            pagination: {
-                el: '.swiper-pagination',
-                dynamicBullets: true
-            },
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
-        });
-    </script>
-</body>
-</html>
+<% contentFor('style') %>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
+<% contentFor('script') %>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+    const swiper = new Swiper('.swiper', {
+        direction: 'horizontal',
+        loop: true,
+        pagination: {
+            el: '.swiper-pagination',
+            dynamicBullets: true
+        },
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+    });
+</script>

@@ -1,139 +1,124 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <%- include('partials/head') %>
 
-    <style>
-        table {
-            display: grid;
-            width: 100%;
-            border-collapse: collapse;
-            grid-template-columns: repeat(5, 1fr);
-            overflow-x: auto;
-        }
+<% contentFor('body') %>
+<section style="padding: 30px;">
+    <table>
+        <thead>
+            <tr>
+                <th>In Millions of USD (except for per share items)</th>
+                <th>52 weeks ending 2012-09-29</th>
+                <th>52 weeks ending 2011-09-24</th>
+                <th>52 weeks ending 2010-09-25</th>
+                <th>52 weeks ending 2009-09-26</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Revenue</td>
+                <td>156,508.00</td>
+                <td>108,249.00</td>
+                <td>65,225.00</td>
+                <td>42,905.00</td>
+            </tr>
+            <tr>
+                <td>Other Revenue, Total</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td>Total Revenue</td>
+                <td>156,508.00</td>
+                <td>108,249.00</td>
+                <td>65,225.00</td>
+                <td>42,905.00</td>
+            </tr>
+            <tr>
+                <td>Cost of Revenue, Total</td>
+                <td>87,846.00</td>
+                <td>64,431.00</td>
+                <td>39,541.00</td>
+                <td>25,683.00</td>
+            </tr>
+            <tr>
+                <td>Gross Profit</td>
+                <td>68,662.00</td>
+                <td>43,818.00</td>
+                <td>25,684.00</td>
+                <td>17,222.00</td>
+            </tr>
+            <tr>
+                <td>Selling/General/Admin. Expenses, Total</td>
+                <td>10,040.00</td>
+                <td>7,599.00</td>
+                <td>5,517.00</td>
+                <td>4,149.00</td>
+            </tr>
+            <tr>
+                <td>Research & Development</td>
+                <td>3,381.00</td>
+                <td>2,429.00</td>
+                <td>1,782.00</td>
+                <td>1,333.00</td>
+            </tr>
+            <tr>
+                <td>Total Operating Expense</td>
+                <td>101,267.00</td>
+                <td>74,459.00</td>
+                <td>46,840.00</td>
+                <td>31,165.00</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
 
-        thead {
-            display: contents;
-        }
+<% contentFor('style') %>
+<style>
+    table {
+        display: grid;
+        width: 100%;
+        border-collapse: collapse;
+        grid-template-columns: repeat(5, 1fr);
+        overflow-x: auto;
+    }
 
-        tbody {
-            display: contents;
-        }
+    thead {
+        display: contents;
+    }
 
-        th, td {
-            padding: 10px;
-            text-align: left;
-            border: 1px solid #ddd;
-        }
+    tbody {
+        display: contents;
+    }
 
-        th {
-            background-color: #4472C4;
-            color: white;
-        }
+    th, td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
 
-        tr {
-            display: contents;
-        }
+    th {
+        background-color: #4472C4;
+        color: white;
+    }
 
-        tr:hover td {
-            filter: brightness(80%);
-        }
+    tr {
+        display: contents;
+    }
 
-        tr:nth-child(even) td {
-            background-color: #e9e9e9;
-            color: #111;
-            font-weight: bold;
-        }
+    tr:hover td {
+        filter: brightness(80%);
+    }
 
-        caption {
-            caption-side: top;
-            font-size: 1.5em;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-    </style>
-</head>
-<body>
-    <%- include('partials/header') %>
+    tr:nth-child(even) td {
+        background-color: #e9e9e9;
+        color: #111;
+        font-weight: bold;
+    }
 
-    <main>
-        <section style="padding: 30px;">
-            <table>
-                <thead>
-                    <tr>
-                        <th>In Millions of USD (except for per share items)</th>
-                        <th>52 weeks ending 2012-09-29</th>
-                        <th>52 weeks ending 2011-09-24</th>
-                        <th>52 weeks ending 2010-09-25</th>
-                        <th>52 weeks ending 2009-09-26</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Revenue</td>
-                        <td>156,508.00</td>
-                        <td>108,249.00</td>
-                        <td>65,225.00</td>
-                        <td>42,905.00</td>
-                    </tr>
-                    <tr>
-                        <td>Other Revenue, Total</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>Total Revenue</td>
-                        <td>156,508.00</td>
-                        <td>108,249.00</td>
-                        <td>65,225.00</td>
-                        <td>42,905.00</td>
-                    </tr>
-                    <tr>
-                        <td>Cost of Revenue, Total</td>
-                        <td>87,846.00</td>
-                        <td>64,431.00</td>
-                        <td>39,541.00</td>
-                        <td>25,683.00</td>
-                    </tr>
-                    <tr>
-                        <td>Gross Profit</td>
-                        <td>68,662.00</td>
-                        <td>43,818.00</td>
-                        <td>25,684.00</td>
-                        <td>17,222.00</td>
-                    </tr>
-                    <tr>
-                        <td>Selling/General/Admin. Expenses, Total</td>
-                        <td>10,040.00</td>
-                        <td>7,599.00</td>
-                        <td>5,517.00</td>
-                        <td>4,149.00</td>
-                    </tr>
-                    <tr>
-                        <td>Research & Development</td>
-                        <td>3,381.00</td>
-                        <td>2,429.00</td>
-                        <td>1,782.00</td>
-                        <td>1,333.00</td>
-                    </tr>
-                    <tr>
-                        <td>Total Operating Expense</td>
-                        <td>101,267.00</td>
-                        <td>74,459.00</td>
-                        <td>46,840.00</td>
-                        <td>31,165.00</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-    </main>
-
-    <%- include('partials/footer') %>
-    
-    <%- include('partials/scripts') %>
-    <script src="/js/auth-modal.js"></script>
-    <script src="/js/auth-check.js"></script>
-</body>
-</html>
+    caption {
+        caption-side: top;
+        font-size: 1.5em;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+</style>

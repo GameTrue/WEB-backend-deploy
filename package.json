@@ -27,15 +27,17 @@
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.16",
     "@nestjs/platform-express": "^11.0.16",
-    "cookie-parser": "^1.4.7",
-    "ejs": "^3.1.9",
-    "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1",
     "@nestjs/typeorm": "^10.0.0",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.3.1",
+    "ejs": "^3.1.9",
+    "express-ejs-layouts": "^2.5.1",
+    "method-override": "^3.0.0",
     "pg": "^8.11.3",
     "pg-connection-string": "^2.6.2",
-    "typeorm": "^0.3.17",
-    "dotenv": "^16.3.1"
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.8.1",
+    "typeorm": "^0.3.17"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

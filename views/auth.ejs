@@ -5,35 +5,42 @@
     <link rel="stylesheet" href="/auth.css">
 </head>
 <body>
+    <% layout('layouts/main') -%>
+    <% block('title', 'Авторизация - CourseMan') -%>
+
+    <% contentFor('body') %>
     <header>
         <h1>Авторизация и Регистрация</h1>
     </header>
-    <main>
-        <section id="auth-container">
-            <div id="login-form">
-                <h2>Вход</h2>
-                <form id="loginForm">
-                    <input type="email" name="email" placeholder="Email" required>
-                    <input type="password" name="password" placeholder="Пароль" required>
-                    <button type="submit">Войти</button>
-                </form>
-            </div>
-            <div id="register-form">
-                <h2>Регистрация</h2>
-                <form id="registerForm">
-                    <input type="text" name="name" placeholder="Имя" required>
-                    <input type="email" name="email" placeholder="Email" required>
-                    <input type="password" name="password" placeholder="Пароль" required>
-                    <button type="submit">Зарегистрироваться</button>
-                </form>
-            </div>
-            <div id="user-state" style="display: none;">
-                <h2>Вы авторизованы</h2>
-                <p id="welcome-message"></p>
-                <button id="logoutBtn">Выйти</button>
-            </div>
-        </section>
-    </main>
+    <section id="auth-container">
+        <div id="login-form">
+            <h2>Вход</h2>
+            <form id="loginForm">
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="password" name="password" placeholder="Пароль" required>
+                <button type="submit">Войти</button>
+            </form>
+        </div>
+        <div id="register-form">
+            <h2>Регистрация</h2>
+            <form id="registerForm">
+                <input type="text" name="name" placeholder="Имя" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="password" name="password" placeholder="Пароль" required>
+                <button type="submit">Зарегистрироваться</button>
+            </form>
+        </div>
+        <div id="user-state" style="display: none;">
+            <h2>Вы авторизованы</h2>
+            <p id="welcome-message"></p>
+            <button id="logoutBtn">Выйти</button>
+        </div>
+    </section>
+
+    <% contentFor('style') %>
+    <link rel="stylesheet" href="/auth.css">
+
+    <% contentFor('script') %>
     <script src="/js/auth.js"></script>
 </body>
 </html>
