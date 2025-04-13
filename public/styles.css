@@ -210,7 +210,8 @@ button {
     color: #aaa;
 	overflow: hidden;
 	display: -webkit-box;
-	-webkit-line-clamp: 3;	
+	-webkit-line-clamp: 3;
+	line-clamp: 3;
 }
 
 .main-buttons {

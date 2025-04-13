@@ -207,4 +207,95 @@ document.addEventListener('DOMContentLoaded', function () {
 			});
 	}
 	
+	document.addEventListener('DOMContentLoaded', function() {
+		// Загружаем курсы при загрузке страницы
+		loadCourses();
+	
+		// Обработчики событий для кнопок админа - добавляем только если пользователь админ
+		if (window.userIsAdmin) {
+			const panelBtn = document.getElementById('panel-btn-admin');
+			const editBtn = document.getElementById('edit-btn-admin');
+			const adminPanel = document.getElementById('filter-admin-panel');
+			const filterPanel = document.getElementById('filter-form-panel');
+			const submitBtn = document.getElementById('submit-btn-admin');
+	
+			if (panelBtn) {
+				panelBtn.addEventListener('click', function() {
+					adminPanel.style.display = adminPanel.style.display === 'none' ? 'block' : 'none';
+					filterPanel.style.display = filterPanel.style.display === 'none' ? 'block' : 'none';
+				});
+			}
+	
+			if (editBtn) {
+				editBtn.addEventListener('click', function() {
+					const courseCards = document.querySelectorAll('.course-card');
+					courseCards.forEach(card => {
+						card.classList.toggle('edit-mode');
+					});
+				});
+			}
+	
+			if (submitBtn) {
+				submitBtn.addEventListener('click', function() {
+					// Логика добавления нового курса
+					const nameInput = document.getElementById('course-name');
+					const authorInput = document.getElementById('course-author');
+					const categorySelect = document.getElementById('course-category');
+					const levelSelect = document.getElementById('course-level');
+	
+					if (nameInput && authorInput && categorySelect && levelSelect) {
+						const name = nameInput.value.trim();
+						const author = authorInput.value.trim();
+						const category = categorySelect.value;
+						const level = levelSelect.value;
+	
+						if (name && author) {
+							addCourse({
+								name,
+								author,
+								category,
+								level
+							});
+							nameInput.value = '';
+							authorInput.value = '';
+						}
+					}
+				});
+			}
+		}
+	
+		// Обработчик для кнопки фильтрации, доступной всем пользователям
+		const filterBtn = document.getElementById('filter-btn');
+		if (filterBtn) {
+			filterBtn.addEventListener('click', function() {
+				const categorySelect = document.getElementById('category');
+				const levelSelect = document.getElementById('level');
+				
+				if (categorySelect && levelSelect) {
+					const category = categorySelect.value;
+					const level = levelSelect.value;
+					
+					filterCourses(category, level);
+				}
+			});
+		}
+	
+		// ... остальной код функций загрузки и фильтрации курсов
+	});
+	
+	// Функции для работы с курсами
+	function loadCourses() {
+		// Здесь будет код загрузки курсов из API
+		// ...existing code...
+	}
+	
+	function filterCourses(category, level) {
+		// Здесь будет код фильтрации курсов
+		// ...existing code...
+	}
+	
+	function addCourse(courseData) {
+		// Здесь будет код добавления нового курса через API
+		// ...existing code...
+	}
 });

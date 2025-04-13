@@ -113,6 +113,8 @@ document.addEventListener('DOMContentLoaded', function() {
       const email = this.email.value.trim();
       const password = this.password.value;
       
+      const selectedRole = document.querySelector('input[name="role"]:checked')?.value || 'student';
+      
       if (password.length < 6) {
         if (registerError) registerError.textContent = 'Пароль должен содержать минимум 6 символов';
         return;
@@ -121,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function() {
       try {
         await fetchApi('/auth/register', {
           method: 'POST',
-          body: JSON.stringify({ name, email, password })
+          body: JSON.stringify({ name, email, password, role: selectedRole })
         });
         
         if (registerModal) registerModal.style.display = 'none';

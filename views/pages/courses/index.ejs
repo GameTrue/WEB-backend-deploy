@@ -2,11 +2,14 @@
 <div class="container">
     <div style="flex: 1;">
         <%- include('./components/filter') %>
-        <%- include('./components/admin-panel') %>
         
-        <div style="display: flex; justify-content: center; max-width: 300px;">
-            <button type="button" class="admin-button" id="panel-btn-admin">Админ панель</button>
-        </div>
+        <% if (isAdmin) { %>
+            <%- include('./components/admin-panel') %>
+            
+            <div style="display: flex; justify-content: center; max-width: 300px;">
+                <button type="button" class="admin-button" id="panel-btn-admin">Админ панель</button>
+            </div>
+        <% } %>
     </div>
 
     <section class="courses">
@@ -17,13 +20,19 @@
                 <%- include('./components/course-card') %>
             </template>
         </div>
+        <% if (isAdmin) { %>
         <div style="display: flex;">
             <button type="button" class="admin-button-edit" id="edit-btn-admin">Редактировать</button>
         </div>
+        <% } %>
     </section>
 </div>
 
 <% contentFor('style') %>
 
 <% contentFor('script') %>
+<script>
+    // Передаем информацию о правах пользователя в JavaScript
+    window.userIsAdmin = isAdmin;
+</script>
 <script src="/js/courses.js"></script>

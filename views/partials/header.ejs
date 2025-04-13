@@ -59,6 +59,20 @@
         <label for="register-password">Пароль:</label>
         <input type="password" id="register-password" name="password" required>
       </div>
+      <!-- Role selection component -->
+      <div class="form-group role-selector">
+        <label>Выберите роль:</label>
+        <div class="role-options">
+          <label class="role-option">
+            <input type="radio" name="role" value="student" checked>
+            <span class="role-button student">Студент</span>
+          </label>
+          <label class="role-option">
+            <input type="radio" name="role" value="teacher">
+            <span class="role-button teacher">Преподаватель</span>
+          </label>
+        </div>
+      </div>
       <button type="submit" class="submit-btn">Зарегистрироваться</button>
     </form>
     <div class="error-message" id="register-error"></div>
