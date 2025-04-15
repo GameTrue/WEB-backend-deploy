@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
   const loginModal = document.getElementById('login-modal');
   const registerModal = document.getElementById('register-modal');
+  const loginModalContent = document.getElementById('login-modal-content');
+  const registerModalContent = document.getElementById('register-modal-content');
   const loginBtn = document.getElementById('login-btn');
   const registerBtn = document.getElementById('register-btn');
   const logoutBtn = document.getElementById('logout-btn');
@@ -40,17 +42,36 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  window.addEventListener('click', function(event) {
-    if (event.target === loginModal) {
+  let isMouseDownInsideModal = false;
+
+  if (loginModal) {
+    loginModal.addEventListener('mousedown', function(event) {
+      if (event.target === loginModal) {
+        isMouseDownInsideModal = true;
+      }
+    });
+  }
+  if (registerModal) {
+    registerModal.addEventListener('mousedown', function(event) {
+      if (event.target === registerModal) {
+        isMouseDownInsideModal = true;
+      }
+    });
+  }
+
+
+  window.addEventListener('mouseup', function(event) {
+    if (event.target === loginModal && isMouseDownInsideModal) {
       loginModal.style.display = 'none';
       if (loginError) loginError.textContent = '';
       if (loginForm) loginForm.reset();
     }
-    if (event.target === registerModal) {
+    if (event.target === registerModal && isMouseDownInsideModal) {
       registerModal.style.display = 'none';
       if (registerError) registerError.textContent = '';
       if (registerForm) registerForm.reset();
     }
+    isMouseDownInsideModal = false;
   });
 
   // Функция для выполнения HTTP запросов

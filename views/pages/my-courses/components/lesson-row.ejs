@@ -1,0 +1,9 @@
+<div class="lesson-row" data-id="<%= lesson.id %>">
+  <div class="lesson-cell"><%= lesson.order %></div>
+  <div class="lesson-cell lesson-title"><%= lesson.title %></div>
+  <div class="lesson-cell"><%= lesson.duration ? `${lesson.duration} мин.` : 'Не указано' %></div>
+  <div class="lesson-cell actions">
+    <a href="/lessons/<%= lesson.id %>/edit" class="lesson-action edit">✏️</a>
+    <a href="#" class="lesson-action delete" data-id="<%= lesson.id %>">🗑️</a>
+  </div>
+</div>

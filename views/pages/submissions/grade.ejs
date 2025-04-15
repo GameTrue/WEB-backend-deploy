@@ -1,0 +1,138 @@
+<% contentFor('body') %>
+<div class="grading-container">
+  <div class="grading-header">
+    <div class="breadcrumbs">
+      <a href="/courses/my">Мои курсы</a> / 
+      <a href="/courses/my/<%= submission.assignment.lesson.courseId %>">
+        <%= submission.assignment.lesson.course.title %>
+      </a> / 
+      <a href="/lessons/<%= submission.assignment.lessonId %>">
+        <%= submission.assignment.lesson.title %>
+      </a> / 
+      <span>Оценка решения</span>
+    </div>
+    <h1>Оценка решения</h1>
+  </div>
+  
+  <div class="grading-content">
+    <div class="submission-info">
+      <div class="submission-card">
+        <div class="submission-header">
+          <h2 class="assignment-title"><%= submission.assignment.title %></h2>
+          <div class="submission-meta">
+            <span class="student-name">Студент: <%= submission.user.name %></span>
+            <span class="submission-date">Дата отправки: <%= new Date(submission.submittedAt).toLocaleString() %></span>
+          </div>
+        </div>
+        
+        <div class="assignment-description">
+          <h3>Задание:</h3>
+          <p><%= submission.assignment.description %></p>
+        </div>
+        
+        <div class="submission-content">
+          <h3>Решение студента:</h3>
+          <pre class="student-solution"><%= submission.content %></pre>
+        </div>
+      </div>
+    </div>
+    
+    <div class="grading-form-container">
+      <h2>Оценка работы</h2>
+      <form id="grading-form" class="grading-form">
+        <div class="form-group">
+          <label for="score">Балл (максимум <%= submission.assignment.maxScore %>):</label>
+          <input 
+            type="number" 
+            id="score" 
+            name="score" 
+            min="0" 
+            max="<%= submission.assignment.maxScore %>" 
+            value="<%= submission.score || '' %>" 
+            required
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="feedback">Отзыв:</label>
+          <textarea 
+            id="feedback" 
+            name="feedback" 
+            rows="5"
+          ><%= submission.feedback || '' %></textarea>
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit" class="button-blue">Сохранить оценку</button>
+          <a href="/lessons/<%= submission.assignment.lessonId %>" class="button-grey">Отмена</a>
+        </div>
+      </form>
+      
+      <div id="grading-success" class="grading-success" style="display: none;">
+        Решение успешно оценено!
+      </div>
+      
+      <div id="grading-error" class="grading-error" style="display: none;"></div>
+    </div>
+  </div>
+</div>
+
+<% contentFor('style') %>
+<link rel="stylesheet" href="/css/submissions.css">
+
+<% contentFor('script') %>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const gradingForm = document.getElementById('grading-form');
+    const successMessage = document.getElementById('grading-success');
+    const errorMessage = document.getElementById('grading-error');
+    
+    if (gradingForm) {
+      gradingForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Hide any previous messages
+        successMessage.style.display = 'none';
+        errorMessage.style.display = 'none';
+        
+        const score = document.getElementById('score').value;
+        const feedback = document.getElementById('feedback').value;
+        
+        try {
+          const response = await fetch('/submissions/<%= submission.id %>/grade', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              score: parseInt(score),
+              feedback
+            }),
+            credentials: 'include'
+          });
+          
+          const result = await response.json();
+          
+          if (!response.ok) {
+            throw new Error(result.message || 'Ошибка при сохранении оценки');
+          }
+          
+          // Show success message
+          successMessage.style.display = 'block';
+          
+          // Redirect back to the lesson page after a delay
+          setTimeout(() => {
+            window.location.href = '/courses/my/<%= submission.assignment.lesson.course.id %>';
+          }, 2000);
+
+
+          
+        } catch (error) {
+          console.error('Error grading submission:', error);
+          errorMessage.textContent = error.message || 'Произошла ошибка при сохранении оценки';
+          errorMessage.style.display = 'block';
+        }
+      });
+    }
+  });
+</script>

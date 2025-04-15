@@ -9,6 +9,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest();
     const status = exception.getStatus();
     
+    // Check if the request accepts JSON (API request)
     const acceptHeader = request.headers.accept || '';
     
     // If API request (accepts JSON), return JSON
@@ -16,7 +17,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
       return response.status(status).json(exception.getResponse());
     }
     
+    // Base variables for all templates
     const baseTemplateVars = {
+      title: `${status} - Ошибка`,
       user: request.user || null,
       isAdmin: request.user?.role === 'admin' || false,
       currentPath: request.path || '/'
@@ -25,29 +28,29 @@ export class HttpExceptionFilter implements ExceptionFilter {
     // For HTML requests, render the appropriate error page
     if (exception instanceof UnauthorizedException) {
       return response.status(status).render('pages/errors/401', {
-        title: '401 - Требуется авторизация',
-        ...baseTemplateVars
+        ...baseTemplateVars,
+        title: '401 - Требуется авторизация'
       });
     } else if (exception instanceof NotFoundException) {
       return response.status(status).render('pages/errors/404', {
-        title: '404 - Страница не найдена',
-        ...baseTemplateVars
+        ...baseTemplateVars,
+        title: '404 - Страница не найдена'
       });
     } else if (exception instanceof ForbiddenException) {
       return response.status(status).render('pages/errors/error', {
+        ...baseTemplateVars,
         title: '403 - Доступ запрещен',
         statusCode: 403,
         message: 'Доступ запрещен',
-        description: 'У вас недостаточно прав для доступа к этому ресурсу.',
-        ...baseTemplateVars
+        description: 'У вас недостаточно прав для доступа к этому ресурсу.'
       });
     } else {
+      // For other types of errors
       return response.status(status).render('pages/errors/error', {
-        title: `${status} - Ошибка`,
+        ...baseTemplateVars,
         statusCode: status,
         message: exception.message || 'Произошла ошибка',
-        description: 'Что-то пошло не так при обработке вашего запроса.',
-        ...baseTemplateVars
+        description: 'Что-то пошло не так при обработке вашего запроса.'
       });
     }
   }

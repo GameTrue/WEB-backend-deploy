@@ -1,0 +1,285 @@
+<% contentFor('body') %>
+<div class="lesson-container">
+  <div class="lesson-header">
+    <div class="lesson-breadcrumbs">
+      <% if (typeof user !== 'undefined' && user) { %>
+        <% if (user.role === 'teacher') { %>
+          <a href="/courses/my">Мои курсы</a> /
+          <a href="/courses/my/<%= lesson.course.id %>"><%= lesson.course.title %></a> /
+          <span class="current-path"><%= lesson.title %></span>
+        <% } else { %>
+          <a href="/courses">Курсы</a> / 
+          <a href="/courses/<%= lesson.course.id %>"><%= lesson.course.title %></a> / 
+          <span class="current-path"><%= lesson.title %></span>
+        <% } %>
+      <% } %>
+
+    </div>
+    <h1 class="lesson-title"><%= lesson.title %></h1>
+    <div class="lesson-meta">
+      <span class="lesson-duration"><i class="fa fa-clock"></i> <%= lesson.duration || 0 %> мин.</span>
+      <% if (isTeacher) { %>
+        <a href="/lessons/<%= lesson.id %>/edit" class="edit-lesson-btn">Редактировать урок</a>
+      <% } %>
+    </div>
+  </div>
+  
+  <div class="lesson-content-container">
+    <!-- Навигация (вкладки) -->
+    <div class="lesson-tabs">
+      <button class="lesson-tab active" data-tab="lecture">Лекция</button>
+      <button class="lesson-tab" data-tab="assignments">Задания <span class="assignments-count"><%= lesson.assignments.length %></span></button>
+      <% if (isTeacher) { %>
+        <button class="lesson-tab" data-tab="statistics">Статистика</button>
+      <% } %>
+    </div>
+    
+    <!-- Содержимое вкладок -->
+    <div class="lesson-tab-content">
+      <!-- Вкладка с лекцией -->
+      <div class="tab-pane active" id="lecture-tab">
+        <div class="lecture-content">
+          <%- lesson.content %>
+        </div>
+        
+        <div class="lesson-navigation">
+          <% if (prevLesson) { %>
+            <a href="/lessons/<%= prevLesson.id %>" class="nav-button prev">← Предыдущий урок</a>
+          <% } %>
+          
+          <% if (nextLesson) { %>
+            <a href="/lessons/<%= nextLesson.id %>" class="nav-button next">Следующий урок →</a>
+          <% } %>
+          
+          <% if (!(lesson.progress.length > 0 && (lesson.progress[lesson.progress.length - 1].status === 'completed'))) { %>
+            <button id="complete-lesson" class="nav-button complete">Завершить урок</button>
+          <% } %>
+
+        </div>
+      </div>
+      
+      <!-- Вкладка с заданиями -->
+      <div class="tab-pane" id="assignments-tab">
+
+        <% if (lesson.assignments && lesson.assignments.length > 0) { %>
+          <div class="assignments-list">
+            <% lesson.assignments.forEach(assignment => { %>
+              <div class="assignment-card">
+                <div class="assignment-header">
+                  <h3 class="assignment-title"><%= assignment.title %></h3>
+                  <div class="assignment-meta">
+                    <span class="max-score"><i class="fa fa-star"></i> <%= assignment.maxScore %> баллов</span>
+                    <% if (assignment.deadline) { %>
+                      <span class="deadline"><i class="fa fa-calendar"></i> До <%= new Date(assignment.deadline).toLocaleDateString() %></span>
+                    <% } %>
+                  </div>
+                </div>
+                <div class="assignment-description">
+                  <%= assignment.description %>
+                </div>
+                
+                <% if (!isTeacher) { %>
+                  <% if (submission = submissions.find(s => s.assignmentId === assignment.id)) { %>
+                    <!-- Уже есть отправленное решение -->
+                    <div class="submission-status <%= submission.score ? 'graded' : 'pending' %>">
+                      <% if (submission.score !== null) { %>
+                        <div class="submission-score">
+                          Оценка: <strong><%= submission.score %> / <%= assignment.maxScore %></strong>
+                        </div>
+                        <% if (submission.feedback) { %>
+                          <div class="submission-feedback">
+                            <strong>Отзыв преподавателя:</strong>
+                            <p><%= submission.feedback %></p>
+                          </div>
+                        <% } %>
+                      <% } else { %>
+                        <div class="submission-pending">На проверке</div>
+                      <% } %>
+                      <div class="submission-details">
+                        <strong>Ваше решение:</strong>
+                        <div class="submission-content"><%= submission.content %></div>
+                        <div class="submission-date">Отправлено: <%= new Date(submission.submittedAt).toLocaleString() %></div>
+                      </div>
+                    </div>
+                  <% } else { %>
+                    <!-- Форма для отправки решения -->
+                    <form class="submission-form" data-assignment-id="<%= assignment.id %>">
+                      <div class="form-group">
+                        <label for="submission-<%= assignment.id %>">Ваше решение:</label>
+                        <textarea id="submission-<%= assignment.id %>" name="content" rows="5" required></textarea>
+                      </div>
+                      <button type="submit" class="submit-btn">Отправить решение</button>
+                    </form>
+                  <% } %>
+                <% } %>
+              </div>
+            <% }); %>
+          </div>
+        <% } else { %>
+          <div class="no-assignments">
+            <p>К этому уроку пока нет заданий.</p>
+          </div>
+        <% } %>
+      </div>
+      
+      <!-- Вкладка со статистикой (только для преподавателей) -->
+      <% if (isTeacher) { %>
+        <div class="tab-pane" id="statistics-tab">
+          <div class="statistics-container">
+            <h3>Статистика прохождения урока</h3>
+            <div class="stats-cards">
+              <div class="stat-card">
+                <div class="stat-value" id="students-started"><%= studentsProgress.started || 0 %></div>
+                <div class="stat-label">Начали урок</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="students-completed"><%= studentsProgress.completed || 0 %></div>
+                <div class="stat-label">Завершили урок</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="submissions-count"><%= submissions.length %></div>
+                <div class="stat-label">Всего решений</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<% contentFor('style') %>
+<link rel="stylesheet" href="/css/lesson.css">
+
+<% contentFor('script') %>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('.lesson-tab');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+    
+    function tabSwitcher(tabName) {
+      tabs.forEach(t => t.classList.remove('active'));
+      tabPanes.forEach(p => p.classList.remove('active'));
+
+      const tabToActivate = document.querySelector(`.lesson-tab[data-tab="${tabName}"]`);
+      const tabContent = document.getElementById(`${tabName}-tab`);
+
+      if (tabToActivate && tabContent) {
+      tabToActivate.classList.add('active');
+      tabContent.classList.add('active');
+      }
+    }
+
+    function checkUrlHash() {
+      const hash = window.location.hash.substring(1);
+      if (hash === 'assignments' || hash === 'statistics' || hash === 'lecture') {
+      tabSwitcher(hash);
+      }
+    }
+
+    checkUrlHash();
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function() {
+      const tabName = this.getAttribute('data-tab');
+      tabSwitcher(tabName);
+
+      // Update URL hash without scrolling
+      history.replaceState(null, null, `#${tabName}`);
+      });
+    });
+    
+    // Отправка решений
+    const submissionForms = document.querySelectorAll('.submission-form');
+    submissionForms.forEach(form => {
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const assignmentId = this.getAttribute('data-assignment-id');
+        const content = this.querySelector('textarea').value;
+        
+        try {
+          const response = await fetch('/submissions/api/submit', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              assignmentId,
+              content
+            }),
+            credentials: 'include'
+          });
+          
+          // Handle non-JSON responses
+          const contentType = response.headers.get('content-type');
+          if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('Server returned an invalid response');
+          }
+          
+          const result = await response.json();
+          
+          if (!response.ok) {
+            throw new Error(result.message || 'Error submitting solution');
+          }
+          
+          // Reload the page while preserving the tab state
+          window.location.href = window.location.pathname + window.location.hash;
+          window.location.reload();
+        } catch (error) {
+          console.error('Error submitting solution:', error);
+          alert('Error submitting solution: ' + error.message);
+        }
+      });
+    });
+    
+    // Завершение урока
+    const completeButton = document.getElementById('complete-lesson');
+    if (completeButton) {
+      completeButton.addEventListener('click', async function() {
+        try {
+          const response = await fetch(`/lessons/<%= lesson.id %>/complete`, {
+            method: 'POST',
+            credentials: 'include'
+          });
+          
+          if (!response.ok) {
+            throw new Error('Ошибка при завершении урока');
+          }
+          
+          window.location.href = '/courses/<%= lesson.course.id %>';
+        } catch (error) {
+          console.error('Error completing lesson:', error);
+          alert('Произошла ошибка при завершении урока: ' + error.message);
+        }
+      });
+    }
+    
+    // Удаление заданий (для преподавателей)
+    const deleteButtons = document.querySelectorAll('.delete-assignment');
+    deleteButtons.forEach(button => {
+      button.addEventListener('click', async function() {
+        if (confirm('Вы уверены, что хотите удалить это задание? Это действие нельзя отменить.')) {
+          const assignmentId = this.getAttribute('data-id');
+          
+          try {
+            const response = await fetch(`/assignments/api/${assignmentId}`, {
+              method: 'DELETE',
+              credentials: 'include'
+            });
+            
+            if (!response.ok) {
+              throw new Error('Ошибка при удалении задания');
+            }
+            
+            // Удаляем карточку задания из DOM
+            this.closest('.assignment-admin-card').remove();
+          } catch (error) {
+            console.error('Error deleting assignment:', error);
+            alert('Произошла ошибка при удалении задания: ' + error.message);
+          }
+        }
+      });
+    });
+  });
+</script>

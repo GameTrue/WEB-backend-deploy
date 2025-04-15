@@ -38,12 +38,12 @@ export class AppController {
 
   @Get('lessons')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.STUDENT)
+  @Roles(UserRole.STUDENT, UserRole.TEACHER) 
   @Render('pages/lessons/index')
   async getLessonsPage(@Req() req: Request) {
     const userData = await this.getUserData(req);
     
-    if (userData.user?.role !== UserRole.STUDENT) {
+    if (userData.user?.role !== UserRole.STUDENT && userData.user?.role !== UserRole.TEACHER) {
       throw new NotFoundException('Page not found');
     }
     
@@ -90,7 +90,6 @@ export class AppController {
     };
   }
 
-  // Вспомогательный метод для получения данных пользователя
   private async getUserData(req: Request) {
     const token = req.cookies['auth_token'];
     if (!token) {

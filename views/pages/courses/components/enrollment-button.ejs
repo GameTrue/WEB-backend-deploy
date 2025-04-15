@@ -1,0 +1,59 @@
+<% if (typeof user === 'undefined' || !user) { %>
+  <div class="enrollment-auth-required">
+    <p>Для записи на курс необходимо авторизоваться</p>
+    <div class="auth-buttons">
+      <button class="button-primary" id="login-to-enroll">Войти</button>
+      <button class="button-secondary" id="register-to-enroll">Регистрация</button>
+    </div>
+  </div>
+<% } else if (user.role === 'student') { %>
+  <% if (isEnrolled) { %>
+    <div class="enrollment-status">
+      <div class="status-badge <%= enrollment.status %>">
+        <% if (enrollment.status === 'active') { %>
+          В процессе
+        <% } else if (enrollment.status === 'completed') { %>
+          Завершен
+        <% } else { %>
+          Отменен
+        <% } %>
+      </div>
+      <p class="enrollment-date">Дата записи: <%= new Date(enrollment.enrollmentDate).toLocaleDateString() %></p>
+      <button id="unenroll-btn" class="button-danger" data-course-id="<%= course.id %>">Отменить запись</button>
+    </div>
+  <% } else { %>
+    <div class="enrollment-action">
+      <% if (course.price > 0) { %>
+        <div class="course-price"><%= course.price %> ₽</div>
+      <% } else { %>
+        <div class="course-price free">Бесплатно</div>
+      <% } %>
+      <button id="enroll-btn" class="button-primary" data-course-id="<%= course.id %>">Записаться на курс</button>
+    </div>
+  <% } %>
+<% } else { %>
+  <div class="enrollment-not-available">
+    <p>Запись доступна только для студентов</p>
+  </div>
+<% } %>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const loginBtn = document.getElementById('login-to-enroll');
+    const registerBtn = document.getElementById('register-to-enroll');
+    
+    if (loginBtn) {
+      loginBtn.addEventListener('click', function() {
+        const loginModal = document.getElementById('login-modal');
+        if (loginModal) loginModal.style.display = 'block';
+      });
+    }
+    
+    if (registerBtn) {
+      registerBtn.addEventListener('click', function() {
+        const registerModal = document.getElementById('register-modal');
+        if (registerModal) registerModal.style.display = 'block';
+      });
+    }
+  });
+</script>

@@ -17,7 +17,7 @@
         <% if (user.role === 'admin') { %>
           <li class="<%= typeof currentPath !== 'undefined' && currentPath === '/admin' ? 'active-link' : '' %>"><a href="/admin">Admin</a></li>
         <% } else if (user.role === 'teacher') { %>
-          <li class="<%= typeof currentPath !== 'undefined' && currentPath === '/my-courses' ? 'active-link' : '' %>"><a href="/my-courses">My courses</a></li>
+          <li class="<%= typeof currentPath !== 'undefined' && currentPath === '/courses/my' ? 'active-link' : '' %>"><a href="/courses/my">My courses</a></li>
         <% } else if (user.role === 'student') { %>
           <li class="<%= typeof currentPath !== 'undefined' && currentPath === '/lessons' ? 'active-link' : '' %>"><a href="/lessons">Lessons</a></li>
         <% } %>
@@ -32,7 +32,7 @@
 
 <!-- Модальное окно входа -->
 <div id="login-modal" class="modal">
-  <div class="modal-content">
+  <div id="login-modal-content" class="modal-content">
     <span class="close">&times;</span>
     <h2>Вход</h2>
     <form id="login-form">
@@ -52,7 +52,7 @@
 
 <!-- Модальное окно регистрации -->
 <div id="register-modal" class="modal">
-  <div class="modal-content">
+  <div id="register-modal-content" class="modal-content">
     <span class="close">&times;</span>
     <h2>Регистрация</h2>
     <form id="register-form">

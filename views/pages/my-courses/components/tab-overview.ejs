@@ -1,0 +1,70 @@
+<div class="tab-content active" id="overview-tab">
+  <div class="overview-stats">
+    <div class="stat-card">
+      <div class="stat-icon">📚</div>
+      <div class="stat-content">
+        <h3 class="stat-title">Всего уроков</h3>
+        <p class="stat-value"><%= course.lessons ? course.lessons.length : 0 %></p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">👨‍🎓</div>
+      <div class="stat-content">
+        <h3 class="stat-title">Студентов</h3>
+        <p class="stat-value"><%= course.enrollments ? course.enrollments.length : 0 %></p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-content">
+        <h3 class="stat-title">Статус</h3>
+        <p class="stat-value"><%= course.published ? 'Опубликован' : 'Черновик' %></p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="overview-description">
+    <h2>Описание курса</h2>
+    <div class="description-content">
+      <% if (course.description) { %>
+        <p><%= course.description %></p>
+      <% } else { %>
+        <p class="empty-description">Описание курса отсутствует. Добавьте описание в настройках курса.</p>
+      <% } %>
+    </div>
+  </div>
+  
+  <div class="quick-actions">
+    <h2>Быстрые действия</h2>
+    <div class="actions-grid">
+      <a href="/courses/my/<%= course.id %>/lessons/create" class="action-card">
+        <div class="action-icon">➕</div>
+        <div class="action-content">
+          <h3>Добавить урок</h3>
+          <p>Создайте новый урок для курса</p>
+        </div>
+      </a>
+      <a href="#" class="action-card" id="toggle-publish">
+        <div class="action-icon"><%= course.published ? '⏸' : '▶️' %></div>
+        <div class="action-content">
+          <h3><%= course.published ? 'Снять с публикации' : 'Опубликовать' %></h3>
+          <p><%= course.published ? 'Сделать курс недоступным для студентов' : 'Сделать курс доступным для студентов' %></p>
+        </div>
+      </a>
+      <a href="#" class="action-card" id="edit-course">
+        <div class="action-icon">✏️</div>
+        <div class="action-content">
+          <h3>Редактировать</h3>
+          <p>Изменить название, описание и другие настройки</p>
+        </div>
+      </a>
+      <a href="#" class="action-card" id="delete-course">
+        <div class="action-icon">🗑️</div>
+        <div class="action-content">
+          <h3>Удалить курс</h3>
+          <p>Полностью удалить курс и все его материалы</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>

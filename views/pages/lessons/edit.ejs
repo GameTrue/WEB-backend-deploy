@@ -1,0 +1,295 @@
+<% contentFor('body') %>
+<div class="lesson-edit-container">
+  <div class="breadcrumbs">
+    <a href="/courses/my">Мои курсы</a> /
+    <a href="/courses/my/<%= course.id %>"><%= course.title %></a> /
+    <a href="/lessons/<%= lesson.id %>"><%= lesson.title %></a> /
+    <span>Редактирование</span>
+  </div>
+  
+  <h1 class="page-title">Редактирование урока</h1>
+  
+  <div class="lesson-edit-tabs">
+    <button class="tab-button active" data-tab="content">Содержание урока</button>
+    <button class="tab-button" data-tab="assignments">Задания (<%= lesson.assignments ? lesson.assignments.length : 0 %>)</button>
+    <button class="tab-button" data-tab="settings">Настройки</button>
+  </div>
+  
+  <div class="tab-content active" id="content-tab">
+    <form id="edit-lesson-form">
+      <div class="form-group">
+        <label for="lesson-title">Название урока*</label>
+        <input type="text" id="lesson-title" name="title" value="<%= lesson.title %>" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="lesson-content">Содержание урока*</label>
+        <textarea id="lesson-content" name="content" rows="15" required><%= lesson.content %></textarea>
+      </div>
+      
+      <div class="form-actions">
+        <button type="submit" class="button-blue">Сохранить изменения</button>
+        <a href="/lessons/<%= lesson.id %>" class="button-grey">Отмена</a>
+      </div>
+    </form>
+  </div>
+  
+  <div class="tab-content" id="assignments-tab">
+    <div class="assignments-header">
+      <h3>Задания урока</h3>
+      <a href="/assignments/create/<%= lesson.id %>" class="button-blue">Добавить задание</a>
+    </div>
+    
+    <% if (lesson.assignments && lesson.assignments.length > 0) { %>
+      <div class="assignments-list">
+        <% lesson.assignments.forEach(assignment => { %>
+          <div class="assignment-item" data-id="<%= assignment.id %>">
+            <div class="assignment-info">
+              <h4><%= assignment.title %></h4>
+              <div class="assignment-meta">
+                <span><strong>Макс. балл:</strong> <%= assignment.maxScore %></span>
+                <% if (assignment.deadline) { %>
+                  <span><strong>Срок сдачи:</strong> <%= new Date(assignment.deadline).toLocaleDateString() %></span>
+                <% } %>
+              </div>
+            </div>
+            <div class="assignment-actions">
+              <a href="/assignments/edit/<%= assignment.id %>" class="edit-button" title="Редактировать">✏️</a>
+              <button class="delete-button" data-id="<%= assignment.id %>" title="Удалить">🗑️</button>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="no-assignments">
+        <p>У этого урока еще нет заданий.</p>
+        <p>Добавьте задания, чтобы ученики могли проверить свои знания.</p>
+      </div>
+    <% } %>
+  </div>
+  
+  <div class="tab-content" id="settings-tab">
+    <form id="lesson-settings-form">
+      <div class="form-group">
+        <label for="lesson-order">Порядковый номер в курсе</label>
+        <input type="number" id="lesson-order" name="order" value="<%= lesson.order %>" min="1">
+      </div>
+      
+      <div class="form-group">
+        <label for="lesson-duration">Продолжительность (в минутах)</label>
+        <input type="number" id="lesson-duration" name="duration" value="<%= lesson.duration || '' %>" min="1">
+      </div>
+      
+      <div class="form-group checkbox">
+        <input type="checkbox" id="lesson-published" name="published" <%= lesson.published ? 'checked' : '' %>>
+        <label for="lesson-published">Опубликовать урок</label>
+      </div>
+      
+      <div class="form-actions">
+        <button type="submit" class="button-blue">Сохранить настройки</button>
+      </div>
+      
+      <div class="danger-zone">
+        <h4>Опасная зона</h4>
+        <button type="button" id="delete-lesson-btn" class="button-red">Удалить урок</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="delete-confirm-modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Подтверждение удаления</h2>
+    <p>Вы действительно хотите удалить урок "<%= lesson.title %>"?</p>
+    <p>Это действие невозможно отменить.</p>
+    <div class="modal-actions">
+      <button id="confirm-delete" class="button-red">Удалить</button>
+      <button class="button-grey cancel">Отмена</button>
+    </div>
+  </div>
+</div>
+
+<% contentFor('style') %>
+<link rel="stylesheet" href="/css/lesson-edit.css">
+
+<% contentFor('script') %>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Tab switching
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Deactivate all tabs
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        tabContents.forEach(content => content.classList.remove('active'));
+        
+        // Activate selected tab
+        button.classList.add('active');
+        const tabId = button.getAttribute('data-tab') + '-tab';
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+    
+    // Lesson content form
+    const editLessonForm = document.getElementById('edit-lesson-form');
+    if (editLessonForm) {
+      editLessonForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const lessonData = {
+          title: document.getElementById('lesson-title').value,
+          content: document.getElementById('lesson-content').value
+        };
+        
+        try {
+          const response = await fetch('/lessons/api/<%= lesson.id %>', {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(lessonData),
+            credentials: 'include'
+          });
+          
+          if (!response.ok) {
+            throw new Error('Failed to update lesson');
+          }
+          
+          alert('Урок успешно обновлен!');
+
+          window.location.href = '/lessons/<%= lesson.id %>';
+          
+        } catch (error) {
+          console.error('Error updating lesson:', error);
+          alert('Ошибка при обновлении урока: ' + error.message);
+        }
+      });
+    }
+    
+    // Lesson settings form
+    const lessonSettingsForm = document.getElementById('lesson-settings-form');
+    if (lessonSettingsForm) {
+      lessonSettingsForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const settingsData = {
+          order: parseInt(document.getElementById('lesson-order').value) || 0,
+          duration: parseInt(document.getElementById('lesson-duration').value) || null,
+          published: document.getElementById('lesson-published').checked
+        };
+        
+        try {
+          const response = await fetch('/lessons/api/<%= lesson.id %>', {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(settingsData),
+            credentials: 'include'
+          });
+          
+          if (!response.ok) {
+            throw new Error('Failed to update lesson settings');
+          }
+          
+          alert('Настройки успешно обновлены!');
+          
+        } catch (error) {
+          console.error('Error updating lesson settings:', error);
+          alert('Ошибка при обновлении настроек: ' + error.message);
+        }
+      });
+    }
+    
+    // Delete lesson confirmation
+    const deleteBtn = document.getElementById('delete-lesson-btn');
+    const deleteModal = document.getElementById('delete-confirm-modal');
+    const confirmDeleteBtn = document.getElementById('confirm-delete');
+    const closeModalBtns = document.querySelectorAll('#delete-confirm-modal .close, #delete-confirm-modal .cancel');
+    
+    if (deleteBtn && deleteModal) {
+      deleteBtn.addEventListener('click', () => {
+        deleteModal.style.display = 'block';
+      });
+      
+      closeModalBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          deleteModal.style.display = 'none';
+        });
+      });
+      
+      if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', async () => {
+          try {
+            const response = await fetch('/lessons/api/<%= lesson.id %>', {
+              method: 'DELETE',
+              credentials: 'include'
+            });
+            
+            if (!response.ok) {
+              throw new Error('Failed to delete lesson');
+            }
+            
+            // Redirect to course page
+            window.location.href = '/courses/my/<%= course.id %>';
+            
+          } catch (error) {
+            console.error('Error deleting lesson:', error);
+            alert('Ошибка при удалении урока: ' + error.message);
+          }
+        });
+      }
+    }
+    
+    // Delete assignment functionality
+    const deleteAssBtns = document.querySelectorAll('.assignment-actions .delete-button');
+    deleteAssBtns.forEach(btn => {
+      btn.addEventListener('click', async function() {
+        const assignmentId = this.getAttribute('data-id');
+        if (!assignmentId) return;
+        
+        if (confirm('Вы действительно хотите удалить это задание?')) {
+          try {
+            const response = await fetch(`/assignments/api/${assignmentId}`, {
+              method: 'DELETE',
+              credentials: 'include'
+            });
+            
+            if (!response.ok) {
+              throw new Error('Failed to delete assignment');
+            }
+            
+            const assignmentItem = document.querySelector(`.assignment-item[data-id="${assignmentId}"]`);
+            if (assignmentItem) {
+              assignmentItem.style.opacity = '0';
+              setTimeout(() => {
+                assignmentItem.remove();
+                
+                // Check if there are any assignments left
+                const assignmentItems = document.querySelectorAll('.assignment-item');
+                if (assignmentItems.length === 0) {
+                  const assignmentsList = document.querySelector('.assignments-list');
+                  if (assignmentsList) {
+                    assignmentsList.innerHTML = `
+                      <div class="no-assignments">
+                        <p>У этого урока еще нет заданий.</p>
+                        <p>Добавьте задания, чтобы ученики могли проверить свои знания.</p>
+                      </div>
+                    `;
+                  }
+                }
+              }, 300);
+            }
+            
+          } catch (error) {
+            console.error('Error deleting assignment:', error);
+            alert('Ошибка при удалении задания: ' + error.message);
+          }
+        }
+      });
+    });
+  });
+</script>

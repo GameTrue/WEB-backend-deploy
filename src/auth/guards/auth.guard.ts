@@ -16,8 +16,7 @@ export class AuthGuard implements CanActivate {
 
     try {
       const user = await this.authService.getUserByToken(token);
-      
-      request['user'] = user;
+      request.user = user;
       return true;
     } catch (error) {
       throw new UnauthorizedException('Недействительный токен');

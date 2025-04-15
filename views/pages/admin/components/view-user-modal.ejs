@@ -1,0 +1,54 @@
+<div class="admin-modal" id="view-user-modal">
+  <div class="admin-modal-content">
+    <div class="admin-modal-header">
+      <h2 class="admin-modal-title">Информация о пользователе</h2>
+      <button class="admin-modal-close">&times;</button>
+    </div>
+    <div class="admin-modal-body">
+      <div class="user-profile-header">
+        <img src="" alt="" class="user-profile-avatar" id="profile-avatar">
+        <div>
+          <h3 id="profile-name"></h3>
+          <p id="profile-email"></p>
+          <span class="status-pill" id="profile-status"></span>
+        </div>
+      </div>
+      
+      <div class="user-profile-details">
+        <h4>Основная информация</h4>
+        <div class="details-grid">
+          <div class="detail-item">
+            <span class="detail-label">ID</span>
+            <span class="detail-value" id="profile-id"></span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Роль</span>
+            <span class="detail-value" id="profile-role"></span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Дата регистрации</span>
+            <span class="detail-value" id="profile-created"></span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Последний вход</span>
+            <span class="detail-value" id="profile-last-login"></span>
+          </div>
+        </div>
+        
+        <h4>Курсы</h4>
+        <div class="user-courses" id="profile-courses">
+          <!-- Содержимое будет добавлено через JS -->
+        </div>
+        
+        <h4>Активные сессии</h4>
+        <div class="user-sessions" id="profile-sessions">
+          <!-- Содержимое будет добавлено через JS -->
+        </div>
+      </div>
+    </div>
+    <div class="admin-modal-footer">
+      <button class="admin-button edit-user" id="edit-profile-btn">Редактировать</button>
+      <button class="admin-modal-close button-grey">Закрыть</button>
+    </div>
+  </div>
+</div>

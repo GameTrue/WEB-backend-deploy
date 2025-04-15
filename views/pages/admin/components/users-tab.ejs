@@ -1,0 +1,53 @@
+<div class="admin-tab-content" id="users-content">
+  <h3>Управление пользователями</h3>
+  
+  <div class="admin-toolbar">
+    <div class="admin-toolbar-left">
+      <div class="admin-search">
+        <input type="text" id="users-search" placeholder="Поиск по имени или email">
+      </div>
+      <div class="admin-filters">
+        <select id="users-role-filter" class="admin-filter-select">
+          <option value="all">Все роли</option>
+          <option value="student">Студенты</option>
+          <option value="teacher">Преподаватели</option>
+          <option value="admin">Администраторы</option>
+        </select>
+        <select id="users-status-filter" class="admin-filter-select">
+          <option value="all">Все статусы</option>
+          <option value="active">Активные</option>
+          <option value="inactive">Заблокированные</option>
+        </select>
+      </div>
+    </div>
+    <div class="admin-toolbar-right">
+      <button id="add-user-btn" class="admin-button">Добавить пользователя</button>
+    </div>
+  </div>
+  
+  <div class="admin-data-container">
+    <div id="users-preloader" class="admin-preloader">
+      <div class="spinner"></div>
+      <p>Загрузка пользователей...</p>
+    </div>
+    
+    <div class="admin-table-container">
+      <table class="admin-table" id="users-table" style="display: none;">
+        <thead>
+          <tr>
+            <th>Пользователь</th>
+            <th>Роль</th>
+            <th>Дата регистрации</th>
+            <th>Статус</th>
+            <th>Курсов</th>
+            <th>Последний вход</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody id="users-tbody">
+          <!-- Данные будут загружены через JavaScript -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

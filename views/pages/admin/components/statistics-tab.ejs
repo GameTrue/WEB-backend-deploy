@@ -1,0 +1,57 @@
+<div class="admin-tab-content" id="statistics-content">
+  <h3>Статистика платформы</h3>
+  
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value" id="total-users">0</div>
+      <div class="stat-label">Всего пользователей</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="total-courses">0</div>
+      <div class="stat-label">Всего курсов</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="total-enrollments">0</div>
+      <div class="stat-label">Всего записей на курсы</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="total-completed">0</div>
+      <div class="stat-label">Завершено курсов</div>
+    </div>
+  </div>
+  
+  <div class="chart-container">
+    <div class="chart-header">
+      <h4 class="chart-title">Регистрации пользователей</h4>
+      <div class="chart-options">
+        <select id="user-stats-period">
+          <option value="week">Неделя</option>
+          <option value="month" selected>Месяц</option>
+          <option value="year">Год</option>
+        </select>
+      </div>
+    </div>
+    <canvas id="user-registration-chart"></canvas>
+  </div>
+  
+  <div class="chart-container">
+    <div class="chart-header">
+      <h4 class="chart-title">Активность пользователей</h4>
+      <div class="chart-options">
+        <select id="activity-stats-period">
+          <option value="week">Неделя</option>
+          <option value="month" selected>Месяц</option>
+          <option value="year">Год</option>
+        </select>
+      </div>
+    </div>
+    <canvas id="user-activity-chart"></canvas>
+  </div>
+  
+  <div class="chart-container">
+    <div class="chart-header">
+      <h4 class="chart-title">Распределение пользователей по ролям</h4>
+    </div>
+    <canvas id="user-roles-chart"></canvas>
+  </div>
+</div>

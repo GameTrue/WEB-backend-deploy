@@ -1,0 +1,94 @@
+<% contentFor('body') %>
+<div class="assignments-container">
+  <div class="breadcrumbs">
+    <a href="/courses/my">Мои курсы</a> /
+    <a href="/courses/my/<%= course.id %>"><%= course.title %></a> /
+    <a href="/courses/my/<%= course.id %>/lessons">Уроки</a> /
+    <a href="/lessons/<%= lesson.id %>"><%= lesson.title %></a> /
+    <span>Редактирование задания</span>
+  </div>
+  
+  <h1 class="page-title">Редактирование задания</h1>
+  
+  <div class="assignment-form-container">
+    <form id="edit-assignment-form">
+      <input type="hidden" id="assignment-id" name="assignmentId" value="<%= assignment.id %>">
+      <input type="hidden" id="lesson-id" name="lessonId" value="<%= lesson.id %>">
+      
+      <div class="form-group">
+        <label for="assignment-title">Название задания*</label>
+        <input type="text" id="assignment-title" name="title" value="<%= assignment.title %>" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="assignment-description">Описание задания*</label>
+        <textarea id="assignment-description" name="description" rows="10" required><%= assignment.description %></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="assignment-max-score">Максимальный балл</label>
+        <input type="number" id="assignment-max-score" name="maxScore" min="1" max="100" value="<%= assignment.maxScore || 100 %>">
+      </div>
+      
+      <div class="form-group">
+        <label for="assignment-deadline">Срок выполнения (опционально)</label>
+        <input type="datetime-local" id="assignment-deadline" name="deadline" value="<%= assignment.deadline ? new Date(assignment.deadline).toISOString().slice(0, 16) : '' %>">
+      </div>
+      
+      <div class="form-actions">
+        <button type="submit" class="button-blue">Сохранить изменения</button>
+        <a href="/lessons/<%= lesson.id %>" class="button-grey">Отмена</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<% contentFor('style') %>
+<link rel="stylesheet" href="/css/assignment.css">
+
+<% contentFor('script') %>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('edit-assignment-form');
+    const assignmentId = document.getElementById('assignment-id').value;
+    
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const lessonId = document.getElementById('lesson-id').value;
+      const title = document.getElementById('assignment-title').value;
+      const description = document.getElementById('assignment-description').value;
+      const maxScore = parseInt(document.getElementById('assignment-max-score').value) || 100;
+      const deadline = document.getElementById('assignment-deadline').value || null;
+      
+      const assignmentData = {
+        title,
+        description,
+        maxScore,
+        deadline
+      };
+      
+      try {
+        const response = await fetch(`/assignments/api/${assignmentId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(assignmentData),
+          credentials: 'include'
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Не удалось обновить задание');
+        }
+        
+        // Перенаправляем обратно к уроку
+        window.location.href = `/lessons/${lessonId}/edit`;
+      } catch (error) {
+        console.error('Ошибка при обновлении задания:', error);
+        alert('Ошибка: ' + error.message);
+      }
+    });
+  });
+</script>

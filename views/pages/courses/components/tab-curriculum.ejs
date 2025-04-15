@@ -1,0 +1,32 @@
+<div class="curriculum-container">
+  <h2>Программа курса</h2>
+  
+  <% if (course.lessons && course.lessons.length > 0) { %>
+    <div class="lessons-list">
+      <% course.lessons.forEach((lesson, index) => { %>
+        <div class="lesson-item">
+          <div class="lesson-header">
+            <div class="lesson-number"><%= index + 1 %></div>
+            <div class="lesson-title"><%= lesson.title %></div>
+            <div class="lesson-duration"><%= lesson.duration || 0 %> мин.</div>
+          </div>
+          <% if (isEnrolled || lesson.preview) { %>
+            <div class="lesson-actions">
+              <a href="/lessons/<%= lesson.id %>" class="lesson-link">
+                <span class="icon">📝</span> Перейти к уроку
+              </a>
+            </div>
+          <% } else { %>
+            <div class="lesson-locked">
+              <span class="icon">🔒</span> Доступно после записи на курс
+            </div>
+          <% } %>
+        </div>
+      <% }); %>
+    </div>
+  <% } else { %>
+    <div class="empty-lessons">
+      <p>В этом курсе пока нет уроков.</p>
+    </div>
+  <% } %>
+</div>

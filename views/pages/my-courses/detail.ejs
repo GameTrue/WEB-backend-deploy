@@ -1,0 +1,37 @@
+<% contentFor('body') %>
+<div class="course-detail-container">
+  <div class="course-detail-header">
+    <div class="course-breadcrumbs">
+      <a href="/courses/my">Мои курсы</a> / <span><%= course.title %></span>
+    </div>
+    
+    <div class="course-detail-title">
+      <h1><%= course.title %></h1>
+      <span class="course-status <%= course.published ? 'status-published' : 'status-draft' %>">
+        <%= course.published ? 'Опубликован' : 'Черновик' %>
+      </span>
+    </div>
+  </div>
+  
+  <div class="course-detail-tabs">
+    <button class="tab-button active" data-tab="overview">Обзор</button>
+    <button class="tab-button" data-tab="lessons">Уроки</button>
+    <button class="tab-button" data-tab="students">Студенты</button>
+    <button class="tab-button" data-tab="submissions">Непроверенные работы</button>
+    <button class="tab-button" data-tab="settings">Настройки</button>
+  </div>
+  
+  <div class="course-detail-content">
+    <%- include('./components/tab-overview', { course }) %>
+    <%- include('./components/tab-lessons', { course }) %>
+    <%- include('./components/tab-students', { course }) %>
+    <%- include('./components/tab-submissions') %>
+    <%- include('./components/tab-settings', { course }) %>
+  </div>
+</div>
+
+<% contentFor('style') %>
+<link rel="stylesheet" href="/css/my-courses.css">
+
+<% contentFor('script') %>
+<script src="/js/my-courses/detail.js"></script>

@@ -1,0 +1,162 @@
+header {
+    position: static;
+}
+
+.create-course-container {
+  position: relative;
+}
+
+.create-course-content {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 30px;
+  margin-top: 30px;
+}
+
+@media (max-width: 992px) {
+  .create-course-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+.course-form {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.form-section {
+  padding: 25px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.form-section h2 {
+  font-size: 1.4rem;
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: var(--color-text-dark);
+}
+
+.field-hint {
+  margin-top: 5px;
+  color: #6b7280;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.create-course-preview {
+  position: sticky;
+  top: 20px;
+  align-self: start;
+}
+
+.create-course-preview h2 {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+}
+
+.course-card-preview {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.preview-header {
+  padding: 15px 20px;
+  position: relative;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.preview-status {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.preview-status.draft {
+  background-color: #e5e7eb;
+  color: #6b7280;
+}
+
+.preview-status.published {
+  background-color: #e3fcef;
+  color: #0e9f6e;
+}
+
+.preview-title {
+  font-size: 1.3rem;
+  margin: 0 0 5px 0;
+  color: var(--color-text-dark);
+  padding-right: 70px;
+}
+
+.preview-category {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.preview-description {
+  padding: 15px 20px;
+  color: #4b5563;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  min-height: 60px;
+  max-height: 150px;
+  overflow-y: auto;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.preview-footer {
+  padding: 15px 20px;
+  background-color: #f9fafb;
+  display: flex;
+  justify-content: space-between;
+}
+
+.preview-level, .preview-price {
+  display: flex;
+  align-items: center;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.level-icon, .price-icon {
+  margin-right: 5px;
+}
+
+.preview-tip {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.preview-tip h3 {
+  font-size: 1.1rem;
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: var(--color-text-dark);
+}
+
+.preview-tip p {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #4b5563;
+}
+
+.preview-tip ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.preview-tip li {
+  margin-bottom: 5px;
+  color: #4b5563;
+}

@@ -1,0 +1,136 @@
+<% contentFor('body') %>
+<div class="course-lessons-container teacher-container">
+  <div class="course-breadcrumbs">
+    <a href="/courses/my">Мои курсы</a> / 
+    <a href="/courses/my/<%= course.id %>"><%= course.title %></a> / 
+    <span>Уроки</span>
+  </div>
+  
+  <h1 class="page-title">Управление уроками курса "<%= course.title %>"</h1>
+  
+  <div class="lessons-actions">
+    <a href="/courses/my/<%= course.id %>/lessons/create" class="button-blue">+ Добавить новый урок</a>
+  </div>
+  
+  <div class="lessons-list-container">
+    <% if (course.lessons && course.lessons.length > 0) { %>
+      <div class="lessons-list">
+        <div class="lesson-row header">
+          <div class="lesson-cell">№</div>
+          <div class="lesson-cell">Название</div>
+          <div class="lesson-cell">Продолжительность</div>
+          <div class="lesson-cell">Действия</div>
+        </div>
+        
+        <% course.lessons.forEach((lesson, index) => { %>
+          <div class="lesson-row" data-id="<%= lesson.id %>">
+            <div class="lesson-cell"><%= lesson.order || index + 1 %></div>
+            <div class="lesson-cell lesson-title"><%= lesson.title %></div>
+            <div class="lesson-cell"><%= lesson.duration ? `${lesson.duration} мин.` : 'Не указано' %></div>
+            <div class="lesson-cell actions">
+              <a href="/lessons/<%= lesson.id %>/edit" class="lesson-action edit" title="Редактировать">✏️</a>
+              <button class="lesson-action delete" data-id="<%= lesson.id %>" title="Удалить">🗑️</button>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-state">
+        <div class="empty-icon">📝</div>
+        <h3>В этом курсе пока нет уроков</h3>
+        <p>Добавьте первый урок, чтобы начать создание контента</p>
+        <a href="/courses/my/<%= course.id %>/lessons/create" class="button-blue">+ Добавить урок</a>
+      </div>
+    <% } %>
+  </div>
+  
+  <!-- Модальное окно подтверждения удаления -->
+  <div class="modal" id="delete-lesson-modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Подтверждение удаления</h2>
+      <p>Вы уверены, что хотите удалить этот урок? Это действие нельзя отменить.</p>
+      <div class="modal-footer">
+        <button class="button-red" id="confirm-delete">Удалить</button>
+        <button class="button-grey cancel">Отмена</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% contentFor('style') %>
+<link rel="stylesheet" href="/css/my-courses.css">
+
+<% contentFor('script') %>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    let lessonToDelete = null;
+    const deleteModal = document.getElementById('delete-lesson-modal');
+    
+    // Делегирование событий для кнопок удаления
+    document.querySelectorAll('.lesson-action.delete').forEach(button => {
+      button.addEventListener('click', function() {
+        lessonToDelete = this.getAttribute('data-id');
+        if (deleteModal) {
+          deleteModal.style.display = 'block';
+        }
+      });
+    });
+    
+    // Закрытие модального окна
+    if (deleteModal) {
+      deleteModal.querySelector('.close').addEventListener('click', () => {
+        deleteModal.style.display = 'none';
+      });
+      
+      deleteModal.querySelector('.cancel').addEventListener('click', () => {
+        deleteModal.style.display = 'none';
+      });
+      
+      // Подтверждение удаления
+      deleteModal.querySelector('#confirm-delete').addEventListener('click', async () => {
+        if (!lessonToDelete) return;
+        
+        try {
+          const response = await fetch(`/lessons/api/${lessonToDelete}`, {
+            method: 'DELETE',
+            credentials: 'include'
+          });
+          
+          if (response.ok) {
+            // Удаляем строку урока из DOM
+            const lessonRow = document.querySelector(`.lesson-row[data-id="${lessonToDelete}"]`);
+            if (lessonRow) {
+              lessonRow.style.opacity = '0';
+              setTimeout(() => {
+                lessonRow.remove();
+                
+                // Проверяем, остались ли уроки
+                const lessonRows = document.querySelectorAll('.lesson-row:not(.header)');
+                if (lessonRows.length === 0) {
+                  document.querySelector('.lessons-list-container').innerHTML = `
+                    <div class="empty-state">
+                      <div class="empty-icon">📝</div>
+                      <h3>В этом курсе пока нет уроков</h3>
+                      <p>Добавьте первый урок, чтобы начать создание контента</p>
+                      <a href="/courses/my/<%= course.id %>/lessons/create" class="button-blue">+ Добавить урок</a>
+                    </div>
+                  `;
+                }
+              }, 300);
+            }
+            
+            // Закрываем модальное окно
+            deleteModal.style.display = 'none';
+          } else {
+            throw new Error('Не удалось удалить урок');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert(error.message);
+          deleteModal.style.display = 'none';
+        }
+      });
+    }
+  });
+</script>

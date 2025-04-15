@@ -1,0 +1,61 @@
+<div class="admin-modal" id="view-course-modal">
+  <div class="admin-modal-content">
+    <div class="admin-modal-header">
+      <h2 class="admin-modal-title">Информация о курсе</h2>
+      <button class="admin-modal-close">&times;</button>
+    </div>
+    <div class="admin-modal-body">
+      <div class="course-profile-header">
+        <h3 id="course-profile-title"></h3>
+        <span class="status-pill" id="course-profile-status"></span>
+      </div>
+      
+      <div class="course-profile-details">
+        <h4>Основная информация</h4>
+        <div class="details-grid">
+          <div class="detail-item">
+            <span class="detail-label">ID</span>
+            <span class="detail-value" id="course-profile-id"></span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Автор</span>
+            <span class="detail-value" id="course-profile-author"></span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Категория</span>
+            <span class="detail-value" id="course-profile-category"></span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Дата создания</span>
+            <span class="detail-value" id="course-profile-created"></span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Цена</span>
+            <span class="detail-value" id="course-profile-price"></span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Уровень</span>
+            <span class="detail-value" id="course-profile-level"></span>
+          </div>
+        </div>
+        
+        <h4>Описание</h4>
+        <div class="course-description" id="course-profile-description"></div>
+        
+        <h4 id="course-profile-lessons-header">Уроки</h4>
+        <div class="course-lessons" id="course-profile-lessons">
+          <!-- Содержимое будет добавлено через JS -->
+        </div>
+        
+        <h4 id="course-profile-students-header">Студенты</h4>
+        <div class="course-students" id="course-profile-students">
+          <!-- Содержимое будет добавлено через JS -->
+        </div>
+      </div>
+    </div>
+    <div class="admin-modal-footer">
+      <button class="admin-button edit-course" id="edit-course-profile-btn">Редактировать</button>
+      <button class="admin-modal-close button-grey">Закрыть</button>
+    </div>
+  </div>
+</div>

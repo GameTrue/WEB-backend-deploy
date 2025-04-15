@@ -1,0 +1,102 @@
+<% contentFor('body') %>
+<div class="create-lesson-container teacher-container">
+  <div class="course-breadcrumbs">
+    <a href="/courses/my">Мои курсы</a> / 
+    <a href="/courses/my/<%= course.id %>"><%= course.title %></a> / 
+    <a href="/courses/my/<%= course.id %>/lessons">Уроки</a> /
+    <span>Создание урока</span>
+  </div>
+  
+  <h1 class="page-title">Создание нового урока для курса "<%= course.title %>"</h1>
+  
+  <div class="lesson-form-container">
+    <form id="create-lesson-form">
+      <div class="form-group">
+        <label for="lesson-title">Название урока *</label>
+        <input type="text" id="lesson-title" name="title" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="lesson-description">Описание</label>
+        <textarea id="lesson-description" name="description" rows="5"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="lesson-order">Порядковый номер</label>
+        <input type="number" id="lesson-order" name="order" value="<%= nextOrder %>" min="1">
+      </div>
+      
+      <div class="form-group">
+        <label for="lesson-duration">Продолжительность (в минутах)</label>
+        <input type="number" id="lesson-duration" name="duration" min="1">
+      </div>
+      
+      <div class="form-group">
+        <label for="lesson-content">Содержание урока *</label>
+        <textarea id="lesson-content" name="content" rows="10" required></textarea>
+      </div>
+      
+      <div class="form-group checkbox">
+        <input type="checkbox" id="lesson-published" name="published">
+        <label for="lesson-published">Опубликовать урок сразу после создания</label>
+      </div>
+      
+      <div class="form-actions">
+        <button type="submit" class="button-blue">Создать урок</button>
+        <a href="/courses/my/<%= course.id %>/lessons" class="button-grey">Отмена</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<% contentFor('style') %>
+<link rel="stylesheet" href="/css/my-courses.css">
+
+<% contentFor('script') %>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const createLessonForm = document.getElementById('create-lesson-form');
+    
+    if (createLessonForm) {
+      createLessonForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(createLessonForm);
+        
+        const lessonData = {
+          title: formData.get('title'),
+          description: formData.get('description'),
+          courseId: '<%= course.id %>',
+          order: parseInt(formData.get('order') || '1'),
+          duration: parseInt(formData.get('duration') || '0'),
+          content: formData.get('content'),
+          published: formData.get('published') === 'on'
+        };
+        
+        try {
+          const response = await fetch('/lessons/api', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(lessonData),
+            credentials: 'include'
+          });
+          
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Не удалось создать урок');
+          }
+          
+          const result = await response.json();
+          
+          // Переходим на страницу со списком уроков
+          window.location.href = `/courses/my/<%= course.id %>/lessons`;
+        } catch (error) {
+          console.error('Error:', error);
+          alert(error.message);
+        }
+      });
+    }
+  });
+</script>

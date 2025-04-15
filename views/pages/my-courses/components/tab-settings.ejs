@@ -1,0 +1,49 @@
+<div class="tab-content" id="settings-tab">
+  <h2>Настройки курса</h2>
+  
+  <div class="settings-form">
+    <form id="course-settings-form">
+      <div class="form-group">
+        <label for="course-title">Название курса</label>
+        <input type="text" id="course-title" name="title" value="<%= course.title %>" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="course-description">Описание курса</label>
+        <textarea id="course-description" name="description" rows="6"><%= course.description || '' %></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="course-category">Категория</label>
+        <select id="course-category" name="categoryId" data-current-category="<%= course.categoryId %>">
+          <option value="">Выберите категорию</option>
+          <!-- Categories will be loaded here -->
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="course-level">Уровень сложности</label>
+        <select id="course-level" name="level">
+          <option value="beginner" <%= course.level === 'beginner' ? 'selected' : '' %>>Начинающий</option>
+          <option value="intermediate" <%= course.level === 'intermediate' ? 'selected' : '' %>>Средний</option>
+          <option value="advanced" <%= course.level === 'advanced' ? 'selected' : '' %>>Продвинутый</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="course-price">Цена (руб.)</label>
+        <input type="number" min="0" step="1" id="course-price" name="price" value="<%= course.price || 0 %>">
+      </div>
+      
+      <div class="form-group checkbox">
+        <input type="checkbox" id="course-published" name="published" <%= course.published ? 'checked' : '' %>>
+        <label for="course-published">Опубликовать курс</label>
+      </div>
+      
+      <div class="form-actions">
+        <button type="submit" class="button-blue">Сохранить изменения</button>
+        <button type="button" class="button-grey" id="cancel-settings">Отмена</button>
+      </div>
+    </form>
+  </div>
+</div>

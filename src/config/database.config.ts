@@ -14,7 +14,6 @@ const getTypeOrmConfig = (): TypeOrmModuleOptions => {
     migrationsRun: true,
     autoLoadEntities: true,
     
-    // SSL configuration for Render
     ssl: {
       rejectUnauthorized: false
     },

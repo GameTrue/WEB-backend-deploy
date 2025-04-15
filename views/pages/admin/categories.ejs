@@ -1,0 +1,42 @@
+<% contentFor('body') %>
+<div class="admin-container">
+  <div class="admin-breadcrumbs">
+    <a href="/admin">Панель администратора</a> / <span>Категории</span>
+  </div>
+  
+  <h1 class="page-title">Управление категориями курсов</h1>
+  
+  <div class="admin-toolbar">
+    <div class="admin-toolbar-left">
+      <div class="admin-search">
+        <input type="text" id="categories-search" placeholder="Поиск по названию категории">
+      </div>
+    </div>
+    <div class="admin-toolbar-right">
+      <button id="add-category-btn" class="admin-button">Добавить категорию</button>
+    </div>
+  </div>
+  
+  <div class="admin-data-container">
+    <div id="categories-preloader" class="admin-preloader">
+      <div class="spinner"></div>
+      <p>Загрузка категорий...</p>
+    </div>
+    
+    <div class="categories-grid" id="categories-grid" style="display: none;">
+      <!-- Категории будут загружены через JavaScript -->
+    </div>
+  </div>
+</div>
+
+<% contentFor('style') %>
+<link rel="stylesheet" href="/css/admin.css">
+
+<% contentFor('script') %>
+<script src="/js/admin/categories.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', async function() {
+    const adminCategories = new AdminCategories();
+    await adminCategories.init();
+  });
+</script>

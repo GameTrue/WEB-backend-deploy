@@ -3,9 +3,9 @@ import { User } from '../../users/entities/user.entity';
 import { Lesson } from '../../lessons/entities/lesson.entity';
 
 export enum ProgressStatus {
-  NOT_STARTED = 'not_started',
+  STARTED = 'started',
   IN_PROGRESS = 'in_progress',
-  COMPLETED = 'completed',
+  COMPLETED = 'completed'
 }
 
 @Entity('progress')
@@ -22,17 +22,17 @@ export class Progress {
   @Column({
     type: 'enum',
     enum: ProgressStatus,
-    default: ProgressStatus.NOT_STARTED,
+    default: ProgressStatus.STARTED
   })
   status: ProgressStatus;
 
-  @Column({ nullable: true, name: 'last_viewed_at' })
-  lastViewedAt: Date;
+  @CreateDateColumn({ name: 'started_at' })
+  startedAt: Date;
 
   @Column({ nullable: true, name: 'completion_date' })
-  completionDate: Date;
+  completedAt: Date;
 
-  // Связи
+
   @ManyToOne(() => User, user => user.progress)
   @JoinColumn({ name: 'user_id' })
   user: User;

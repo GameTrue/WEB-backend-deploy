@@ -119,7 +119,7 @@ export class CreateInitialSchema1712940885624 implements MigrationInterface {
         "user_id" uuid NOT NULL,
         "lesson_id" uuid NOT NULL,
         "status" "public"."progress_status_enum" NOT NULL DEFAULT 'not_started',
-        "last_viewed_at" TIMESTAMP,
+        "started_at" TIMESTAMP,
         "completion_date" TIMESTAMP,
         CONSTRAINT "PK_progress" PRIMARY KEY ("id")
       )

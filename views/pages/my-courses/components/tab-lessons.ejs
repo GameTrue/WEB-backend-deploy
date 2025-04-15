@@ -1,0 +1,30 @@
+<div class="tab-content" id="lessons-tab">
+  <div class="lessons-header">
+    <h2>Уроки курса</h2>
+    <a href="/courses/my/<%= course.id %>/lessons/create" class="button-blue">+ Добавить урок</a>
+  </div>
+  
+  <div id="lessons-list" class="lessons-list">
+    <% if (course.lessons && course.lessons.length > 0) { %>
+      <div class="lessons-table">
+        <div class="lesson-row header">
+          <div class="lesson-cell">№</div>
+          <div class="lesson-cell">Название</div>
+          <div class="lesson-cell">Продолжительность</div>
+          <div class="lesson-cell">Действия</div>
+        </div>
+        
+        <% course.lessons.forEach((lesson) => { %>
+          <%- include('./lesson-row', { lesson }) %>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-state">
+        <div class="empty-icon">📝</div>
+        <h3>В этом курсе пока нет уроков</h3>
+        <p>Добавьте первый урок, чтобы начать создание контента</p>
+        <a href="/courses/my/<%= course.id %>/lessons/create" class="button-blue">+ Добавить урок</a>
+      </div>
+    <% } %>
+  </div>
+</div>

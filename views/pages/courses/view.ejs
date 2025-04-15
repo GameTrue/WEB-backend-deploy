@@ -1,0 +1,141 @@
+<% contentFor('body') %>
+<div class="course-view-container">
+  <div class="breadcrumbs">
+    <a href="/courses">Курсы</a> / 
+    <span class="current-path"><%= course.title %></span>
+  </div>
+  
+  <div class="course-header">
+    <div class="course-header-content">
+      <span class="course-level <%= course.level %>"><%= course.level %></span>
+      <h1 class="course-title"><%= course.title %></h1>
+      <div class="course-author">
+        Преподаватель: <span><%= course.author.name %></span>
+      </div>
+      <div class="course-category">
+        Категория: <span><%= course.category ? course.category.name : 'Без категории' %></span>
+      </div>
+    </div>
+    <div class="course-enrollment">
+      <%- include('./components/enrollment-button', { course, isEnrolled, enrollment }) %>
+    </div>
+  </div>
+  
+  <div class="course-body">
+    <div class="course-main">
+      <div class="course-tabs">
+        <button class="course-tab active" data-tab="overview">Обзор</button>
+        <button class="course-tab" data-tab="curriculum">Программа</button>
+        <% if (isEnrolled) { %>
+          <button class="course-tab" data-tab="progress">Мой прогресс</button>
+        <% } %>
+      </div>
+      
+      <div class="tab-content active" id="overview-tab">
+        <%- include('./components/tab-overview', { course }) %>
+      </div>
+      
+      <div class="tab-content" id="curriculum-tab">
+        <%- include('./components/tab-curriculum', { course, isEnrolled }) %>
+      </div>
+      
+      <% if (isEnrolled) { %>
+        <div class="tab-content" id="progress-tab">
+          <%- include('./components/tab-progress', { course, enrollment }) %>
+        </div>
+      <% } %>
+    </div>
+    
+    <div class="course-sidebar">
+      <%- include('./components/course-sidebar', { course, isEnrolled, enrollment }) %>
+    </div>
+  </div>
+</div>
+
+<% contentFor('style') %>
+<link rel="stylesheet" href="/css/course-view.css">
+
+<% contentFor('script') %>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Переключение вкладок
+    const tabs = document.querySelectorAll('.course-tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function() {
+        // Убираем активный класс со всех вкладок
+        tabs.forEach(t => t.classList.remove('active'));
+        tabContents.forEach(c => c.classList.remove('active'));
+        
+        // Добавляем активный класс нажатой вкладке
+        this.classList.add('active');
+        
+        // Показываем соответствующий контент
+        const tabName = this.getAttribute('data-tab');
+        document.getElementById(tabName + '-tab').classList.add('active');
+      });
+    });
+    
+    // Инициализация кнопки записи на курс
+    initEnrollmentButtons();
+  });
+  
+  function initEnrollmentButtons() {
+    const enrollBtn = document.getElementById('enroll-btn');
+    const unenrollBtn = document.getElementById('unenroll-btn');
+    
+    if (enrollBtn) {
+      enrollBtn.addEventListener('click', async function() {
+        try {
+          const response = await fetch(`/courses/api/${this.dataset.courseId}/enroll`, {
+            method: 'POST',
+            credentials: 'include'
+          });
+          
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Не удалось записаться на курс');
+          }
+          
+          // Перезагружаем страницу для отображения обновленного статуса
+          window.location.reload();
+        } catch (error) {
+          alert('Ошибка: ' + error.message);
+        }
+      });
+    }
+    
+    if (unenrollBtn) {
+      unenrollBtn.addEventListener('click', async function() {
+        if (confirm('Вы уверены, что хотите отменить запись на этот курс?')) {
+          try {
+            const response = await fetch(`/courses/api/${this.dataset.courseId}/unenroll`, {
+              method: 'DELETE',
+              credentials: 'include'
+            });
+            
+            if (!response.ok) {
+              const error = await response.json();
+              throw new Error(error.message || 'Не удалось отменить запись');
+            }
+            
+            // Перезагружаем страницу для отображения обновленного статуса
+            window.location.reload();
+          } catch (error) {
+            alert('Ошибка: ' + error.message);
+          }
+        }
+      });
+    }
+  }
+  
+  function getLevelText(level) {
+    switch(level) {
+      case 'beginner': return 'Начинающий';
+      case 'intermediate': return 'Средний';
+      case 'advanced': return 'Продвинутый';
+      default: return 'Не указан';
+    }
+  }
+</script>

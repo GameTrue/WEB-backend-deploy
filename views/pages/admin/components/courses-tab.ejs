@@ -1,0 +1,49 @@
+<div class="admin-tab-content" id="courses-content">
+  <h3>Управление курсами</h3>
+  
+  <div class="admin-toolbar">
+    <div class="admin-toolbar-left">
+      <div class="admin-search">
+        <input type="text" id="courses-search" placeholder="Поиск по названию курса">
+      </div>
+      <div class="admin-filters">
+        <select id="courses-category-filter" class="admin-filter-select">
+          <option value="all">Все категории</option>
+          <!-- Будет загружено через JavaScript -->
+        </select>
+        <select id="courses-status-filter" class="admin-filter-select">
+          <option value="all">Все статусы</option>
+          <option value="published">Опубликованные</option>
+          <option value="draft">Черновики</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  
+  <div class="admin-data-container">
+    <div id="courses-preloader" class="admin-preloader">
+      <div class="spinner"></div>
+      <p>Загрузка курсов...</p>
+    </div>
+    
+    <div class="admin-table-container">
+      <table class="admin-table" id="courses-table" style="display: none;">
+        <thead>
+          <tr>
+            <th>Название</th>
+            <th>Автор</th>
+            <th>Категория</th>
+            <th>Статус</th>
+            <th>Цена</th>
+            <th>Студентов</th>
+            <th>Дата создания</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody id="courses-tbody">
+          <!-- Данные будут загружены через JavaScript -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

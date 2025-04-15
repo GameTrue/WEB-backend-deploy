@@ -1,0 +1,79 @@
+<div class="course-description">
+  <h2>О курсе</h2>
+  <% if (course.description) { %>
+    <div class="course-description-text">
+      <%= course.description %>
+    </div>
+  <% } else { %>
+    <div class="course-description-empty">
+      Описание курса отсутствует.
+    </div>
+  <% } %>
+</div>
+
+<div class="course-features">
+  <div class="feature-item">
+    <div class="feature-icon">📚</div>
+    <div class="feature-details">
+      <div class="feature-title">Количество уроков</div>
+      <div class="feature-value"><%= course.lessons ? course.lessons.length : 0 %></div>
+    </div>
+  </div>
+  
+  <div class="feature-item">
+    <div class="feature-icon">⏱️</div>
+    <div class="feature-details">
+      <div class="feature-title">Общая продолжительность</div>
+      <div class="feature-value">
+        <% 
+          let totalDuration = 0;
+          if (course.lessons) {
+            course.lessons.forEach(lesson => {
+              totalDuration += lesson.duration || 0;
+            });
+          }
+        %>
+        <%= totalDuration %> мин.
+      </div>
+    </div>
+  </div>
+  
+  <div class="feature-item">
+    <div class="feature-icon">👨‍🎓</div>
+    <div class="feature-details">
+      <div class="feature-title">Количество студентов</div>
+      <div class="feature-value"><%= course.enrollments ? course.enrollments.length : 0 %></div>
+    </div>
+  </div>
+  
+  <div class="feature-item">
+    <div class="feature-icon">🎯</div>
+    <div class="feature-details">
+      <div class="feature-title">Уровень сложности</div>
+      <div class="feature-value">
+        <% if (course.level === 'beginner') { %>
+          Начинающий
+        <% } else if (course.level === 'intermediate') { %>
+          Средний
+        <% } else if (course.level === 'advanced') { %>
+          Продвинутый
+        <% } else { %>
+          Не указан
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="author-info">
+  <h2>О преподавателе</h2>
+  <div class="author-card">
+    <div class="author-avatar">
+      <div class="avatar-placeholder"><%= course.author.name.charAt(0).toUpperCase() %></div>
+    </div>
+    <div class="author-details">
+      <h3 class="author-name"><%= course.author.name %></h3>
+      <div class="author-courses">Курсов: <%= course.author.coursesCount || 1 %></div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,25 @@
+<div class="admin-tab-content" id="categories-content">
+  <h3>Управление категориями курсов</h3>
+  
+  <div class="admin-toolbar">
+    <div class="admin-toolbar-left">
+      <div class="admin-search">
+        <input type="text" id="categories-search" placeholder="Поиск по названию категории">
+      </div>
+    </div>
+    <div class="admin-toolbar-right">
+      <button id="add-category-btn" class="admin-button">Добавить категорию</button>
+    </div>
+  </div>
+  
+  <div class="admin-data-container">
+    <div id="categories-preloader" class="admin-preloader">
+      <div class="spinner"></div>
+      <p>Загрузка категорий...</p>
+    </div>
+    
+    <div class="categories-grid" id="categories-grid" style="display: none;">
+      <!-- Категории будут загружены через JavaScript -->
+    </div>
+  </div>
+</div>

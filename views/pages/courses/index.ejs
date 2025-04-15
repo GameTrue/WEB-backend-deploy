@@ -1,38 +1,226 @@
 <% contentFor('body') %>
-<div class="container">
-    <div style="flex: 1;">
-        <%- include('./components/filter') %>
-        
-        <% if (isAdmin) { %>
-            <%- include('./components/admin-panel') %>
-            
-            <div style="display: flex; justify-content: center; max-width: 300px;">
-                <button type="button" class="admin-button" id="panel-btn-admin">Админ панель</button>
-            </div>
-        <% } %>
+<div class="courses-container">
+  <div class="courses-header">
+    <h1 class="page-title">Доступные курсы</h1>
+    <div class="courses-search">
+      <input type="text" id="courses-search-input" placeholder="Поиск курсов...">
     </div>
+  </div>
 
-    <section class="courses">
-        <h2>Курсы</h2>
-        <div id="preloader">Загрузка данных...</div>
-        <div class="courses-grid" id="courses-grid">
-            <template id="course-template">
-                <%- include('./components/course-card') %>
-            </template>
+  <div class="main-content-container">
+    <div class="filter-column">
+      <h2>Фильтры</h2>
+      <form id="course-filters">
+        <label for="category-filter">Категория</label>
+        <select id="category-filter" name="category">
+          <option value="">Все категории</option>
+          <!-- Категории будут загружены динамически -->
+        </select>
+        
+        <label for="level-filter">Уровень</label>
+        <select id="level-filter" name="level">
+          <option value="">Все уровни</option>
+          <option value="beginner">Начинающий</option>
+          <option value="intermediate">Средний</option>
+          <option value="advanced">Продвинутый</option>
+        </select>
+        
+        <label for="price-filter">Цена</label>
+        <select id="price-filter" name="price">
+          <option value="">Все цены</option>
+          <option value="free">Бесплатно</option>
+          <option value="paid">Платные</option>
+        </select>
+        
+        <button type="button" class="filter-button" id="apply-filters">Применить фильтры</button>
+      </form>
+    </div>
+    
+    <div class="courses-content">
+      <div id="courses-preloader">
+        <div class="spinner"></div>
+        <p>Загружаем курсы...</p>
+      </div>
+      
+      <div id="courses-empty" style="display: none;">
+        <div class="empty-courses">
+          <h3>Курсы не найдены</h3>
+          <p>Попробуйте изменить параметры поиска или фильтры</p>
         </div>
-        <% if (isAdmin) { %>
-        <div style="display: flex;">
-            <button type="button" class="admin-button-edit" id="edit-btn-admin">Редактировать</button>
-        </div>
-        <% } %>
-    </section>
+      </div>
+      
+      <div class="available-courses-grid" id="courses-grid">
+        <!-- Курсы будут загружены динамически -->
+      </div>
+    </div>
+  </div>
 </div>
 
 <% contentFor('style') %>
+<link rel="stylesheet" href="/css/courses.css">
 
 <% contentFor('script') %>
 <script>
-    // Передаем информацию о правах пользователя в JavaScript
-    window.userIsAdmin = isAdmin;
+  document.addEventListener('DOMContentLoaded', function() {
+    const coursesGrid = document.getElementById('courses-grid');
+    const preloader = document.getElementById('courses-preloader');
+    const emptyState = document.getElementById('courses-empty');
+    const searchInput = document.getElementById('courses-search-input');
+    const categoryFilter = document.getElementById('category-filter');
+    const levelFilter = document.getElementById('level-filter');
+    const priceFilter = document.getElementById('price-filter');
+    const applyFiltersBtn = document.getElementById('apply-filters');
+    
+    let allCourses = [];
+    
+    // Загрузка курсов
+    async function loadCourses() {
+      try {
+        preloader.style.display = 'flex';
+        coursesGrid.style.display = 'none';
+        emptyState.style.display = 'none';
+        
+        const response = await fetch('/courses/api/available', {
+          credentials: 'include'
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to load courses');
+        }
+        
+        allCourses = await response.json();
+        
+        // Загрузка категорий
+        await loadCategories();
+        
+        // Отображение курсов
+        displayCourses(allCourses);
+        
+        preloader.style.display = 'none';
+        
+        if (allCourses.length === 0) {
+          emptyState.style.display = 'block';
+        } else {
+          coursesGrid.style.display = 'grid';
+        }
+      } catch (error) {
+        console.error('Error loading courses:', error);
+        preloader.innerHTML = `<p class="error-message">Не удалось загрузить курсы. ${error.message}</p>`;
+      }
+    }
+    
+    // Загрузка категорий для фильтра
+    async function loadCategories() {
+      try {
+        const response = await fetch('/categories/api');
+        
+        if (!response.ok) {
+          throw new Error('Failed to load categories');
+        }
+        
+        const categories = await response.json();
+        
+        categoryFilter.innerHTML = '<option value="">Все категории</option>';
+        
+        categories.forEach(category => {
+          const option = document.createElement('option');
+          option.value = category.id;
+          option.textContent = category.name;
+          categoryFilter.appendChild(option);
+        });
+      } catch (error) {
+        console.error('Error loading categories:', error);
+      }
+    }
+    
+    // Отображение курсов
+    function displayCourses(courses) {
+      coursesGrid.innerHTML = '';
+      
+      if (courses.length === 0) {
+        emptyState.style.display = 'block';
+        coursesGrid.style.display = 'none';
+        return;
+      }
+      
+      emptyState.style.display = 'none';
+      coursesGrid.style.display = 'grid';
+      
+      courses.forEach(course => {
+        const courseCard = document.createElement('div');
+        courseCard.className = `course-card ${course.level || 'beginner'}`;
+        
+        courseCard.innerHTML = `
+          <div class="course-card-inner">
+            <div class="course-level-badge">${getLevelText(course.level)}</div>
+            <h3 class="course-title">${course.title}</h3>
+            <div class="course-author">${course.author.name}</div>
+            <div class="course-details">
+              <div class="course-info-item">
+                <span class="info-icon">📚</span> ${course.lessons ? course.lessons.length : 0} уроков
+              </div>
+              <div class="course-info-item">
+                <span class="info-icon">👨‍🎓</span> ${course.enrollments ? course.enrollments.length : 0} студентов
+              </div>
+            </div>
+            <div class="course-price">${course.price > 0 ? `${course.price} ₽` : 'Бесплатно'}</div>
+            <a href="/courses/${course.id}" class="course-btn">Подробнее</a>
+          </div>
+        `;
+        
+        coursesGrid.appendChild(courseCard);
+      });
+    }
+    
+    // Фильтрация курсов
+    function filterCourses() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const categoryValue = categoryFilter.value;
+      const levelValue = levelFilter.value;
+      const priceValue = priceFilter.value;
+      
+      const filteredCourses = allCourses.filter(course => {
+        // Поиск по названию и описанию
+        const matchesSearch = course.title.toLowerCase().includes(searchTerm) || 
+                            (course.description && course.description.toLowerCase().includes(searchTerm));
+        
+        // Фильтр по категории
+        const matchesCategory = !categoryValue || course.categoryId === categoryValue;
+        
+        // Фильтр по уровню
+        const matchesLevel = !levelValue || course.level === levelValue;
+        
+        // Фильтр по цене
+        const matchesPrice = !priceValue || 
+                          (priceValue === 'free' && (course.price === 0 || course.price === "0.00")) ||
+                          (priceValue === 'paid' && course.price > 0);
+        
+        return matchesSearch && matchesCategory && matchesLevel && matchesPrice;
+      });
+      
+      displayCourses(filteredCourses);
+    }
+    
+    // Обработчики событий
+    if (searchInput) {
+      searchInput.addEventListener('input', filterCourses);
+    }
+    
+    if (applyFiltersBtn) {
+      applyFiltersBtn.addEventListener('click', filterCourses);
+    }
+    
+    // Вспомогательные функции
+    function getLevelText(level) {
+      switch(level) {
+        case 'beginner': return 'Начинающий';
+        case 'intermediate': return 'Средний';
+        case 'advanced': return 'Продвинутый';
+        default: return 'Начинающий';
+      }
+    }
+    
+    // Загружаем курсы при загрузке страницы
+    loadCourses();
+  });
 </script>
-<script src="/js/courses.js"></script>

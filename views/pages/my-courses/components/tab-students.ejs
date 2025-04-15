@@ -1,0 +1,39 @@
+<div class="tab-content" id="students-tab">
+  <h2>Студенты курса</h2>
+  
+  <% if (course.enrollments && course.enrollments.length > 0) { %>
+    <div class="students-table">
+      <div class="student-row header">
+        <div class="student-cell">Имя</div>
+        <div class="student-cell">Email</div>
+        <div class="student-cell">Дата регистрации</div>
+        <div class="student-cell">Статус</div>
+        <div class="student-cell">Действия</div>
+      </div>
+      
+      <% course.enrollments.forEach(enrollment => { %>
+        <div class="student-row" data-id="<%= enrollment.id %>">
+          <div class="student-cell"><%= enrollment.user.name %></div>
+          <div class="student-cell"><%= enrollment.user.email %></div>
+          <div class="student-cell"><%= new Date(enrollment.enrollmentDate).toLocaleDateString() %></div>
+          <div class="student-cell">
+            <span class="enrollment-status <%= enrollment.status %>">
+              <%= enrollment.status === 'active' ? 'Активен' : 
+                 enrollment.status === 'completed' ? 'Завершил' : 'Отменен' %>
+            </span>
+          </div>
+          <div class="student-cell actions">
+            <a href="#" class="student-action message" data-id="<%= enrollment.user.id %>">✉️</a>
+            <a href="#" class="student-action remove" data-id="<%= enrollment.id %>">❌</a>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  <% } else { %>
+    <div class="empty-state">
+      <div class="empty-icon">👥</div>
+      <h3>На курс еще никто не записался</h3>
+      <p>Когда студенты запишутся на курс, они появятся здесь</p>
+    </div>
+  <% } %>
+</div>

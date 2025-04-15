@@ -1,0 +1,71 @@
+<div class="course-sidebar-content">
+  <div class="course-card-preview <%= course.level %>">
+    <div class="course-price-tag">
+      <% if (course.price > 0) { %>
+        <%= course.price %> ₽
+      <% } else { %>
+        Бесплатно
+      <% } %>
+    </div>
+  </div>
+  
+  <div class="course-stats">
+    <div class="stat-row">
+      <div class="stat-label">Уроков</div>
+      <div class="stat-value"><%= course.lessons ? course.lessons.length : 0 %></div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-label">Продолжительность</div>
+      <div class="stat-value">
+        <% 
+          let totalDuration = 0;
+          if (course.lessons) {
+            course.lessons.forEach(lesson => {
+              totalDuration += lesson.duration || 0;
+            });
+          }
+        %>
+        <%= totalDuration %> мин.
+      </div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-label">Сложность</div>
+      <div class="stat-value">
+        <% if (course.level === 'beginner') { %>
+          Начинающий
+        <% } else if (course.level === 'intermediate') { %>
+          Средний
+        <% } else if (course.level === 'advanced') { %>
+          Продвинутый
+        <% } else { %>
+          Не указан
+        <% } %>
+      </div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-label">Студентов</div>
+      <div class="stat-value"><%= course.enrollments ? course.enrollments.length : 0 %></div>
+    </div>
+  </div>
+  
+  <div class="enrollment-section">
+    <% if (isEnrolled) { %>
+      <% if (enrollment.status === 'active') { %>
+        <a href="/lessons/<%= course.lessons && course.lessons[0] ? course.lessons[0].id : '#' %>" class="button-primary full-width">
+          Продолжить обучение
+        </a>
+      <% } else if (enrollment.status === 'completed') { %>
+        <div class="completion-badge">
+          <span class="icon">🎓</span> Курс завершен
+        </div>
+        <a href="/lessons/<%= course.lessons && course.lessons[0] ? course.lessons[0].id : '#' %>" class="button-secondary full-width">
+          Повторить курс
+        </a>
+      <% } %>
+    <% } else { %>
+      <button id="sidebar-enroll-btn" class="button-primary full-width" data-course-id="<%= course.id %>">
+        Записаться на курс
+      </button>
+    <% } %>
+  </div>
+</div>

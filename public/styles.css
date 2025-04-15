@@ -37,6 +37,7 @@
     --color-grey-light: #ccc;
     --color-grey-dark: #333;
     --color-blue: #007bff;
+	--color-blue-dark: #005fc5;
     --color-purple: #6f42c1;
     --color-media-bg: #ddd;
     --color-media-text: #464646;
@@ -574,7 +575,7 @@ footer {
 .course-card {
     background-color: #444;
     color: white;
-	height: 200px;
+	/* height: 200px; */
 	min-width: 200px;
     padding: 20px;
     border-radius: 10px;

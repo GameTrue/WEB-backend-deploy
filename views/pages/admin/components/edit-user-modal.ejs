@@ -1,0 +1,51 @@
+<div class="admin-modal" id="edit-user-modal">
+  <div class="admin-modal-content">
+    <div class="admin-modal-header">
+      <h2 class="admin-modal-title">Редактирование пользователя</h2>
+      <button class="admin-modal-close">&times;</button>
+    </div>
+    <div class="admin-modal-body">
+      <form id="edit-user-form">
+        <input type="hidden" id="user-id" name="id">
+        
+        <div class="admin-form-group">
+          <label for="user-name">Имя</label>
+          <input type="text" id="user-name" name="name" required>
+        </div>
+        
+        <div class="admin-form-group">
+          <label for="user-email">Email</label>
+          <input type="email" id="user-email" name="email" required>
+        </div>
+        
+        <div class="admin-form-group">
+          <label for="user-role">Роль</label>
+          <select id="user-role" name="role">
+            <option value="student">Студент</option>
+            <option value="teacher">Преподаватель</option>
+            <option value="admin">Администратор</option>
+          </select>
+        </div>
+        
+        <div class="admin-form-group">
+          <label for="user-password">Пароль (оставьте пустым, чтобы не менять)</label>
+          <input type="password" id="user-password" name="password" placeholder="Новый пароль">
+        </div>
+        
+        <div class="admin-form-group">
+          <label for="user-avatar">URL аватара</label>
+          <input type="text" id="user-avatar" name="avatar">
+        </div>
+        
+        <div class="admin-form-group checkbox">
+          <input type="checkbox" id="user-active" name="active">
+          <label for="user-active">Активен</label>
+        </div>
+      </form>
+    </div>
+    <div class="admin-modal-footer">
+      <button class="admin-button" id="save-user-btn">Сохранить</button>
+      <button class="admin-modal-close button-grey">Отмена</button>
+    </div>
+  </div>
+</div>

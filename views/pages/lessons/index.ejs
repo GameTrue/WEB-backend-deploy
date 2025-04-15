@@ -1,55 +1,238 @@
 <% contentFor('body') %>
-<section style="padding: 30px;">
-    <%- include('./components/lessons-table') %>
-</section>
+<div class="lessons-container">
+  <div class="lessons-header">
+    <h1 class="page-title">Мои уроки</h1>
+  </div>
+  
+  <div class="enrolled-courses">
+    <h2>Курсы, на которые вы записаны</h2>
+    
+    <div id="courses-preloader">
+      <div class="spinner"></div>
+      <p>Загружаем курсы...</p>
+    </div>
+    
+    <div id="courses-empty" style="display: none;">
+      <div class="empty-courses">
+        <h3>Вы еще не записаны ни на один курс</h3>
+        <p>Перейдите в раздел <a href="/courses">Курсы</a> для выбора и записи на курсы</p>
+      </div>
+    </div>
+    
+    <div class="enrolled-courses-grid" id="enrolled-courses-grid">
+      <!-- Курсы будут загружены динамически -->
+    </div>
+  </div>
+  
+  <div class="recent-lessons">
+    <h2>Недавние уроки</h2>
+    
+    <div id="lessons-preloader">
+      <div class="spinner"></div>
+      <p>Загружаем уроки...</p>
+    </div>
+    
+    <div id="lessons-empty" style="display: none;">
+      <div class="empty-lessons">
+        <h3>У вас нет недавних уроков</h3>
+        <p>Начните обучение на курсе, чтобы увидеть здесь свои уроки</p>
+      </div>
+    </div>
+    
+    <div class="recent-lessons-list" id="recent-lessons-list">
+      <!-- Уроки будут загружены динамически -->
+    </div>
+  </div>
+</div>
 
 <% contentFor('style') %>
-<style>
-    table {
-        display: grid;
-        width: 100%;
-        border-collapse: collapse;
-        grid-template-columns: repeat(5, 1fr);
-        overflow-x: auto;
-    }
+<link rel="stylesheet" href="/css/student-lessons.css">
 
-    thead {
-        display: contents;
+<% contentFor('script') %>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const coursesGrid = document.getElementById('enrolled-courses-grid');
+    const coursesPreloader = document.getElementById('courses-preloader');
+    const coursesEmpty = document.getElementById('courses-empty');
+    
+    const lessonsList = document.getElementById('recent-lessons-list');
+    const lessonsPreloader = document.getElementById('lessons-preloader');
+    const lessonsEmpty = document.getElementById('lessons-empty');
+    
+    // Загружаем курсы
+    async function loadEnrolledCourses() {
+      try {
+        coursesPreloader.style.display = 'flex';
+        coursesGrid.style.display = 'none';
+        coursesEmpty.style.display = 'none';
+        
+        const response = await fetch('/courses/api/my-enrollments', {
+          credentials: 'include'
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to load enrolled courses');
+        }
+        
+        const courses = await response.json();
+        
+        displayEnrolledCourses(courses);
+        
+        coursesPreloader.style.display = 'none';
+        
+        if (courses.length === 0) {
+          coursesEmpty.style.display = 'block';
+        } else {
+          coursesGrid.style.display = 'grid';
+        }
+      } catch (error) {
+        console.error('Error loading enrolled courses:', error);
+        coursesPreloader.innerHTML = `<p class="error-message">Не удалось загрузить курсы. ${error.message}</p>`;
+      }
     }
+    
+    // Отображаем записанные курсы
+    function displayEnrolledCourses(courses) {
+      coursesGrid.innerHTML = '';
+      
+      if (courses.length === 0) {
+        coursesEmpty.style.display = 'block';
+        coursesGrid.style.display = 'none';
+        return;
+      }
+      
+      coursesEmpty.style.display = 'none';
+      coursesGrid.style.display = 'grid';
+      
+      courses.forEach(enrollment => {
+        const course = enrollment.course;
+        
+        let completedLessons = 0;
+        let totalLessons = course.lessons ? course.lessons.length : 0;
+        console.log(enrollment)
+        course.lessons.forEach(lesson => {
+          if (lesson.progress.length > 0 && lesson.progress[lesson.progress.length-1].status === 'completed') {
+            completedLessons++;
+          }
+        });
+        
+        const progressPercentage = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+        
 
-    tbody {
-        display: contents;
+        // Вычисляем прогресс
+        const progressPercent = progressPercentage || 0;
+        // const progressPercent = Math.round(progress * 100);
+        
+        const courseCard = document.createElement('div');
+        courseCard.className = `course-card ${course.level || 'beginner'}`;
+        
+        courseCard.innerHTML = `
+          <div class="course-card-inner">
+            <div class="course-status ${enrollment.status}">
+              ${getStatusText(enrollment.status)}
+            </div>
+            <h3 class="course-title">${course.title}</h3>
+            <div class="course-progress">
+              <div class="progress-bar">
+                <div class="progress-value" style="width: ${progressPercent}%"></div>
+              </div>
+              <div class="progress-text">${progressPercent}% пройдено</div>
+            </div>
+            <a href="/courses/${course.id}" class="course-btn">Продолжить обучение</a>
+          </div>
+        `;
+        
+        coursesGrid.appendChild(courseCard);
+      });
     }
-
-    th, td {
-        padding: 10px;
-        text-align: left;
-        border: 1px solid #ddd;
+    
+    // Загружаем недавние уроки
+    async function loadRecentLessons() {
+      try {
+        lessonsPreloader.style.display = 'flex';
+        lessonsList.style.display = 'none';
+        lessonsEmpty.style.display = 'none';
+        
+        const response = await fetch('/lessons/api/recent', {
+          credentials: 'include'
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to load recent lessons');
+        }
+        
+        const lessons = await response.json();
+        
+        displayRecentLessons(lessons);
+        
+        lessonsPreloader.style.display = 'none';
+        
+        if (lessons.length === 0) {
+          lessonsEmpty.style.display = 'block';
+        } else {
+          lessonsList.style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Error loading recent lessons:', error);
+        lessonsPreloader.innerHTML = `<p class="error-message">Не удалось загрузить уроки. ${error.message}</p>`;
+      }
     }
-
-    th {
-        background-color: #4472C4;
-        color: white;
+    
+    // Отображаем недавние уроки
+    function displayRecentLessons(lessons) {
+      lessonsList.innerHTML = '';
+      
+      if (lessons.length === 0) {
+        lessonsEmpty.style.display = 'block';
+        lessonsList.style.display = 'none';
+        return;
+      }
+      
+      lessonsEmpty.style.display = 'none';
+      lessonsList.style.display = 'block';
+      
+      lessons.forEach(progress => {
+        const lesson = progress.lesson;
+        
+        const lessonItem = document.createElement('div');
+        lessonItem.className = `lesson-item ${progress.status}`;
+        
+        lessonItem.innerHTML = `
+          <div class="lesson-info">
+            <div class="lesson-course">${lesson.course.title}</div>
+            <h3 class="lesson-title">${lesson.title}</h3>
+            <div class="lesson-status">${getProgressStatusText(progress.status)}</div>
+          </div>
+          <div class="lesson-actions">
+            <a href="/lessons/${lesson.id}" class="lesson-btn">Перейти к уроку</a>
+          </div>
+        `;
+        
+        lessonsList.appendChild(lessonItem);
+      });
     }
-
-    tr {
-        display: contents;
+    
+    // Вспомогательные функции
+    function getStatusText(status) {
+      switch(status) {
+        case 'active': return 'В процессе';
+        case 'completed': return 'Завершен';
+        case 'canceled': return 'Отменен';
+        default: return 'В процессе';
+      }
     }
-
-    tr:hover td {
-        filter: brightness(80%);
+    
+    function getProgressStatusText(status) {
+      switch(status) {
+        case 'not_started': return 'Не начат';
+        case 'in_progress': return 'В процессе';
+        case 'completed': return 'Завершен';
+        default: return 'Не начат';
+      }
     }
-
-    tr:nth-child(even) td {
-        background-color: #e9e9e9;
-        color: #111;
-        font-weight: bold;
-    }
-
-    caption {
-        caption-side: top;
-        font-size: 1.5em;
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
-</style>
+    
+    // Загружаем данные
+    loadEnrolledCourses();
+    loadRecentLessons();
+  });
+</script>

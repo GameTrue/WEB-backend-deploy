@@ -1,146 +1,44 @@
 <% contentFor('body') %>
-<div class="container">
+<div class="admin-container">
   <h1 class="page-title">Панель администратора</h1>
   
   <section class="admin-dashboard">
     <div class="admin-tabs">
-      <button class="admin-tab active" data-tab="users">Пользователи</button>
+      <button class="admin-tab" data-tab="users">Пользователи</button>
       <button class="admin-tab" data-tab="courses">Курсы</button>
+      <button class="admin-tab" data-tab="categories">Категории</button>
       <button class="admin-tab" data-tab="statistics">Статистика</button>
     </div>
     
     <div class="admin-content">
-      <div class="admin-tab-content active" id="users-content">
-        <h3>Управление пользователями</h3>
-        <div class="admin-data-container">
-          <div id="users-preloader">Загрузка пользователей...</div>
-          <table class="admin-table" id="users-table" style="display: none;">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Имя</th>
-                <th>Email</th>
-                <th>Роль</th>
-                <th>Действия</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Данные будут загружены здесь -->
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <!-- Вкладка пользователей -->
+      <%- include('./components/users-tab') %>
       
-      <div class="admin-tab-content" id="courses-content">
-        <h3>Управление курсами</h3>
-        <div class="admin-data-container">
-          <div id="courses-preloader">Загрузка курсов...</div>
-          <!-- Контент для управления курсами -->
-        </div>
-      </div>
+      <!-- Вкладка курсов -->
+      <%- include('./components/courses-tab') %>
       
-      <div class="admin-tab-content" id="statistics-content">
-        <h3>Статистика платформы</h3>
-        <div class="admin-data-container">
-          <div id="stats-preloader">Загрузка статистики...</div>
-          <!-- Контент для статистики -->
-        </div>
-      </div>
+      <!-- Вкладка категорий -->
+      <%- include('./components/categories-tab') %>
+      
+      <!-- Вкладка статистики -->
+      <%- include('./components/statistics-tab') %>
     </div>
   </section>
+  
+  <!-- Модальные окна -->
+  <%- include('./components/edit-user-modal') %>
+  <%- include('./components/view-user-modal') %>
+  <%- include('./components/edit-course-modal') %>
+  <%- include('./components/view-course-modal') %>
 </div>
 
 <% contentFor('style') %>
-<style>
-  .page-title {
-    color: var(--color-text-dark);
-    margin: 20px 0;
-    text-align: center;
-  }
-  
-  .admin-dashboard {
-    background-color: var(--color-background-light);
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    color: var(--color-text-dark);
-  }
-  
-  .admin-tabs {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  
-  .admin-tab {
-    padding: 10px 20px;
-    border: none;
-    background-color: var(--color-grey-light);
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  
-  .admin-tab.active {
-    background-color: var(--color-blue);
-    color: white;
-  }
-  
-  .admin-tab-content {
-    display: none;
-  }
-  
-  .admin-tab-content.active {
-    display: block;
-  }
-  
-  .admin-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  
-  .admin-table th,
-  .admin-table td {
-    border: 1px solid var(--color-grey-light);
-    padding: 10px;
-    text-align: left;
-  }
-  
-  .admin-table th {
-    background-color: var(--color-grey-light);
-  }
-  
-  .admin-data-container {
-    margin-top: 20px;
-  }
-</style>
+<link rel="stylesheet" href="/css/admin.css">
 
 <% contentFor('script') %>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const tabs = document.querySelectorAll('.admin-tab');
-    
-    tabs.forEach(tab => {
-      tab.addEventListener('click', function() {
-        // Remove active class from all tabs
-        tabs.forEach(t => t.classList.remove('active'));
-        
-        // Add active class to clicked tab
-        this.classList.add('active');
-        
-        // Hide all content
-        document.querySelectorAll('.admin-tab-content').forEach(content => {
-          content.classList.remove('active');
-        });
-        
-        // Show selected content
-        const tabName = this.getAttribute('data-tab');
-        document.getElementById(`${tabName}-content`).classList.add('active');
-      });
-    });
-    
-    // Функционал страницы будет добавлен позже
-    console.log('Admin page loaded');
-  });
-</script>
+<script src="/js/admin.js"></script>
+<script src="/js/admin/users.js"></script>
+<script src="/js/admin/courses.js"></script>
+<script src="/js/admin/categories.js"></script>
+<script src="/js/admin/statistics.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

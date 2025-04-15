@@ -1,63 +1,48 @@
 <% contentFor('body') %>
-<div class="container">
-  <h1 class="page-title">Мои курсы</h1>
+<div class="teacher-container">
+  <div class="teacher-header">
+    <h1 class="page-title">Мои курсы</h1>
+    <a href="/courses/my/create" class="button-blue create-course-btn">Создать курс</a>
+  </div>
   
-  <section class="teacher-dashboard">
-    <div class="dashboard-header">
-      <h2>Панель управления курсами</h2>
-      <button class="button-blue create-course-btn">+ Создать новый курс</button>
-    </div>
+  <div class="courses-dashboard">
+    <%- include('./components/stats') %>
     
     <div class="courses-list">
-      <div id="teacher-preloader">Загрузка ваших курсов...</div>
+      <div class="courses-header">
+        <h2>Ваши курсы</h2>
+        <div class="courses-filter">
+          <label for="course-filter">Фильтр:</label>
+          <select id="course-filter">
+            <option value="all">Все курсы</option>
+            <option value="published">Опубликованные</option>
+            <option value="draft">Черновики</option>
+          </select>
+        </div>
+      </div>
+      
+      <div id="courses-preloader">
+        <div class="spinner"></div>
+        <p>Загружаем ваши курсы...</p>
+      </div>
+      
+      <div id="courses-empty" style="display: none;">
+        <%- include('./components/empty-courses') %>
+      </div>
+      
       <div class="teacher-courses-grid" id="teacher-courses-grid">
-        <!-- Курсы будут загружены сюда -->
+        <!-- Courses will be loaded here -->
       </div>
     </div>
-  </section>
+    
+    <div id="notifications" class="notifications">
+      <!-- Notifications will appear here -->
+    </div>
+  </div>
 </div>
 
 <% contentFor('style') %>
-<style>
-  .page-title {
-    color: var(--color-text-dark);
-    margin: 20px 0;
-    text-align: center;
-  }
-  
-  .teacher-dashboard {
-    background-color: var(--color-background-light);
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    color: var(--color-text-dark);
-  }
-  
-  .create-course-btn {
-    padding: 10px 15px;
-    border-radius: 5px;
-    font-weight: bold;
-  }
-  
-  .teacher-courses-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
-  }
-</style>
+<link rel="stylesheet" href="/css/my-courses.css">
 
 <% contentFor('script') %>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Функционал страницы будет добавлен позже
-    console.log('My Courses page loaded');
-  });
-</script>
+<script src="/js/my-courses/index.js"></script>

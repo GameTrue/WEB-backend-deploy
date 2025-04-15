@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { Course } from '../../courses/entities/course.entity';
 import { Assignment } from '../../assignments/entities/assignment.entity';
 import { Progress } from '../../progress/entities/progress.entity';
@@ -15,9 +15,9 @@ export class Lesson {
   title: string;
 
   @Column({ type: 'text' })
-  content: string;
+  content: string; // Содержание урока (текст лекции)
 
-  @Column()
+  @Column({ default: 0 })
   order: number;
 
   @Column({ nullable: true })
@@ -29,14 +29,16 @@ export class Lesson {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  // Связи
+  // Связь с курсом
   @ManyToOne(() => Course, course => course.lessons)
   @JoinColumn({ name: 'course_id' })
   course: Course;
 
+  // Связь с заданиями
   @OneToMany(() => Assignment, assignment => assignment.lesson)
   assignments: Assignment[];
 
+  // Связь с прогрессом студентов
   @OneToMany(() => Progress, progress => progress.lesson)
   progress: Progress[];
 }

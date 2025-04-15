@@ -1,0 +1,85 @@
+<div class="progress-container">
+  <h2>Ваш прогресс</h2>
+  
+  <% 
+    let completedLessons = 0;
+    let totalLessons = course.lessons ? course.lessons.length : 0;
+    
+    if (course.lessons && enrollment.progress) {
+      course.lessons.forEach(lesson => {
+        const lessonProgress = enrollment.progress.find(p => p.lessonId === lesson.id);
+        if (lessonProgress && lessonProgress.status === 'completed') {
+          completedLessons++;
+        }
+      });
+    }
+    
+    const progressPercentage = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+  %>
+  
+  <div class="progress-overview">
+    <div class="progress-bar-container">
+      <div class="progress-bar" style="width: <%= progressPercentage %>%"></div>
+      <div class="progress-text"><%= progressPercentage %>% завершено</div>
+    </div>
+    <div class="progress-stats">
+      <div class="stat-item">
+        <div class="stat-label">Завершенные уроки</div>
+        <div class="stat-value"><%= completedLessons %> / <%= totalLessons %></div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Статус курса</div>
+        <div class="stat-value <%= enrollment.status %>">
+          <% if (enrollment.status === 'completed') { %>
+            Завершен
+          <% } else if (enrollment.status === 'active') { %>
+            В процессе
+          <% } else { %>
+            Отменен
+          <% } %>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Дата записи</div>
+        <div class="stat-value"><%= new Date(enrollment.enrollmentDate).toLocaleDateString() %></div>
+      </div>
+    </div>
+  </div>
+  
+  <h3>Детальный прогресс</h3>
+  <% if (course.lessons && course.lessons.length > 0) { %>
+    <div class="lessons-progress">
+      <% course.lessons.forEach((lesson, index) => { %>
+        <% 
+          const lessonProgress = enrollment.progress ? 
+            enrollment.progress.find(p => p.lessonId === lesson.id) : null;
+          const status = lessonProgress ? lessonProgress.status : 'not_started';
+        %>
+        <div class="lesson-progress-item <%= status %>">
+          <div class="lesson-progress-header">
+            <div class="lesson-progress-title">
+              <span class="lesson-number"><%= index + 1 %>.</span>
+              <%= lesson.title %>
+            </div>
+            <div class="lesson-progress-status">
+              <% if (status === 'completed') { %>
+                <span class="status-indicator completed">✅ Завершен</span>
+              <% } else if (status === 'in_progress') { %>
+                <span class="status-indicator in-progress">⏳ В процессе</span>
+              <% } else { %>
+                <span class="status-indicator not-started">⭕ Не начат</span>
+              <% } %>
+            </div>
+          </div>
+          <div class="lesson-progress-actions">
+            <a href="/lessons/<%= lesson.id %>" class="button-small">Перейти к уроку</a>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  <% } else { %>
+    <div class="empty-lessons">
+      <p>В этом курсе пока нет уроков.</p>
+    </div>
+  <% } %>
+</div>
