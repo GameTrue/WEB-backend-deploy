@@ -9,7 +9,9 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/entities/user.entity';
 import { LessonsService } from '../lessons/lessons.service';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiSecurity, ApiExtraModels } from '@nestjs/swagger';
 
+@ApiTags('assignments')
 @Controller('assignments')
 export class AssignmentsController {
   constructor(
@@ -23,6 +25,16 @@ export class AssignmentsController {
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.TEACHER)
   @Render('pages/assignments/create')
+  @ApiOperation({ 
+    summary: 'Форма создания задания', 
+    description: 'Отображает форму для создания нового задания. Требуется роль TEACHER.' 
+  })
+  @ApiParam({ name: 'lessonId', description: 'ID урока, для которого создается задание' })
+  @ApiSecurity('auth-token')
+  @ApiResponse({ status: 200, description: 'Форма успешно отображена' })
+  @ApiResponse({ status: 401, description: 'Не авторизован' })
+  @ApiResponse({ status: 403, description: 'Доступ запрещен - требуется роль TEACHER' })
+  @ApiResponse({ status: 404, description: 'Урок не найден или пользователь не имеет прав' })
   async showCreateForm(@Param('lessonId', ParseUUIDPipe) lessonId: string, @Req() req: Request) {
     try {
       const lesson = await this.lessonsService.findOne(lessonId, {
@@ -55,6 +67,16 @@ export class AssignmentsController {
   @Post('api')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.TEACHER)
+  @ApiOperation({ 
+    summary: 'Создать новое задание', 
+    description: 'Создает новое задание для урока. Требуется роль TEACHER.' 
+  })
+  @ApiBody({ type: CreateAssignmentDto })
+  @ApiSecurity('auth-token')
+  @ApiResponse({ status: 201, description: 'Задание успешно создано' })
+  @ApiResponse({ status: 401, description: 'Не авторизован' })
+  @ApiResponse({ status: 403, description: 'Доступ запрещен - требуется роль TEACHER' })
+  @ApiResponse({ status: 404, description: 'Урок не найден или пользователь не является его автором' })
   async create(@Body() createAssignmentDto: CreateAssignmentDto, @Req() req: Request) {
     const lesson = await this.lessonsService.findOne(createAssignmentDto.lessonId, {
       relations: {
@@ -71,6 +93,11 @@ export class AssignmentsController {
 
   @Get('api/lesson/:lessonId')
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Получить все задания урока', description: 'Возвращает все задания для указанного урока' })
+  @ApiParam({ name: 'lessonId', description: 'ID урока' })
+  @ApiSecurity('auth-token')
+  @ApiResponse({ status: 200, description: 'Список заданий успешно получен' })
+  @ApiResponse({ status: 401, description: 'Не авторизован' })
   async findAllByLesson(@Param('lessonId', ParseUUIDPipe) lessonId: string) {
     return this.assignmentsService.findAllByLesson(lessonId);
   }
@@ -78,6 +105,12 @@ export class AssignmentsController {
   @Get(':id')
   @UseGuards(AuthGuard)
   @Render('pages/assignments/view')
+  @ApiOperation({ summary: 'Просмотр задания', description: 'Отображает страницу просмотра задания' })
+  @ApiParam({ name: 'id', description: 'ID задания' })
+  @ApiSecurity('auth-token')
+  @ApiResponse({ status: 200, description: 'Задание успешно найдено и отображено' })
+  @ApiResponse({ status: 401, description: 'Не авторизован' })
+  @ApiResponse({ status: 404, description: 'Задание не найдено или нет доступа' })
   async findOne(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
     const assignment = await this.assignmentsService.findOne(id);
     const lesson = await this.lessonsService.findOne(assignment.lessonId);
@@ -107,6 +140,16 @@ export class AssignmentsController {
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.TEACHER)
   @Render('pages/assignments/edit')
+  @ApiOperation({ 
+    summary: 'Форма редактирования задания', 
+    description: 'Отображает форму для редактирования задания. Требуется роль TEACHER.' 
+  })
+  @ApiParam({ name: 'id', description: 'ID задания' })
+  @ApiSecurity('auth-token')
+  @ApiResponse({ status: 200, description: 'Форма успешно отображена' })
+  @ApiResponse({ status: 401, description: 'Не авторизован' })
+  @ApiResponse({ status: 403, description: 'Доступ запрещен - требуется роль TEACHER' })
+  @ApiResponse({ status: 404, description: 'Задание не найдено или пользователь не является его автором' })
   async showEditForm(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
     const assignment = await this.assignmentsService.findOne(id);
     const lesson = await this.lessonsService.findOne(assignment.lessonId, {
@@ -135,6 +178,17 @@ export class AssignmentsController {
   @Patch('api/:id')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.TEACHER)
+  @ApiOperation({ 
+    summary: 'Обновить задание', 
+    description: 'Обновляет существующее задание. Требуется роль TEACHER.' 
+  })
+  @ApiParam({ name: 'id', description: 'ID задания' })
+  @ApiBody({ type: UpdateAssignmentDto })
+  @ApiSecurity('auth-token')
+  @ApiResponse({ status: 200, description: 'Задание успешно обновлено' })
+  @ApiResponse({ status: 401, description: 'Не авторизован' })
+  @ApiResponse({ status: 403, description: 'Доступ запрещен - требуется роль TEACHER' })
+  @ApiResponse({ status: 404, description: 'Задание не найдено или пользователь не является его автором' })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateAssignmentDto: UpdateAssignmentDto,
@@ -157,6 +211,16 @@ export class AssignmentsController {
   @Delete('api/:id')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.TEACHER)
+  @ApiOperation({ 
+    summary: 'Удалить задание', 
+    description: 'Удаляет существующее задание. Требуется роль TEACHER.' 
+  })
+  @ApiParam({ name: 'id', description: 'ID задания' })
+  @ApiSecurity('auth-token')
+  @ApiResponse({ status: 200, description: 'Задание успешно удалено' })
+  @ApiResponse({ status: 401, description: 'Не авторизован' })
+  @ApiResponse({ status: 403, description: 'Доступ запрещен - требуется роль TEACHER' })
+  @ApiResponse({ status: 404, description: 'Задание не найдено или пользователь не является его автором' })
   async remove(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
     const assignment = await this.assignmentsService.findOne(id);
     const lesson = await this.lessonsService.findOne(assignment.lessonId, {

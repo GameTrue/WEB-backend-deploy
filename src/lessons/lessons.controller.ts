@@ -11,7 +11,10 @@ import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
 import { SubmissionsService } from '../submissions/submissions.service';
 import { ProgressService } from 'src/progress/progress.service';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiSecurity } from '@nestjs/swagger';
+import { Lesson } from './entities/lesson.entity';
 
+@ApiTags('lessons')
 @Controller('lessons')
 export class LessonsController {
   constructor(
@@ -52,6 +55,16 @@ export class LessonsController {
   @Get(':id')
   @UseGuards(AuthGuard)
   @Render('pages/lessons/view')
+  @ApiOperation({ 
+    summary: 'Просмотр урока', 
+    description: 'Отображает страницу с содержимым урока. Доступно для студентов, записанных на курс, и для автора курса.' 
+  })
+  @ApiParam({ name: 'id', description: 'ID урока', type: 'string', format: 'uuid' })
+  @ApiSecurity('auth-token')
+  @ApiResponse({ status: 200, description: 'Страница урока успешно отображена' })
+  @ApiResponse({ status: 401, description: 'Не авторизован - отображается страница 401' })
+  @ApiResponse({ status: 403, description: 'Нет доступа к уроку - отображается страница 403' })
+  @ApiResponse({ status: 404, description: 'Урок не найден - отображается страница 404' })
   async viewLesson(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
     // Получаем урок с заданиями и курсом
     const lesson = await this.lessonsService.findOne(id, {
@@ -100,6 +113,16 @@ export class LessonsController {
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.TEACHER)
   @Render('pages/lessons/edit')
+  @ApiOperation({ 
+    summary: 'Форма редактирования урока', 
+    description: 'Отображает форму для редактирования урока. Требуется роль TEACHER и авторство курса.' 
+  })
+  @ApiParam({ name: 'id', description: 'ID урока', type: 'string', format: 'uuid' })
+  @ApiSecurity('auth-token')
+  @ApiResponse({ status: 200, description: 'Форма успешно отображена' })
+  @ApiResponse({ status: 401, description: 'Не авторизован - отображается страница 401' })
+  @ApiResponse({ status: 403, description: 'Доступ запрещен - требуется роль TEACHER, отображается страница 403' })
+  @ApiResponse({ status: 404, description: 'Урок не найден или пользователь не является автором курса' })
   async getEditLessonPage(
     @Param('id', ParseUUIDPipe) id: string,
     @Req() req: Request
@@ -135,6 +158,16 @@ export class LessonsController {
   // Отметить урок как завершенный
   @Post(':id/complete')
   @UseGuards(AuthGuard)
+  @ApiOperation({ 
+    summary: 'Отметить урок как завершенный', 
+    description: 'Отмечает урок как пройденный для текущего пользователя. Требуется роль STUDENT и запись на курс.' 
+  })
+  @ApiParam({ name: 'id', description: 'ID урока', type: 'string', format: 'uuid' })
+  @ApiSecurity('auth-token')
+  @ApiResponse({ status: 200, description: 'Урок успешно отмечен как завершенный' })
+  @ApiResponse({ status: 401, description: 'Не авторизован' })
+  @ApiResponse({ status: 403, description: 'Доступ запрещен - требуется роль STUDENT или запись на курс' })
+  @ApiResponse({ status: 404, description: 'Урок не найден' })
   async completeLesson(
     @Param('id', ParseUUIDPipe) id: string,
     @Req() req: Request,
@@ -159,6 +192,21 @@ export class LessonsController {
   @Post('api')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.TEACHER)
+  @ApiOperation({ 
+    summary: 'Создать урок', 
+    description: 'Создает новый урок для курса. Требуется роль TEACHER и авторство курса.' 
+  })
+  @ApiBody({ type: CreateLessonDto })
+  @ApiSecurity('auth-token')
+  @ApiResponse({ 
+    status: 201, 
+    description: 'Урок успешно создан',
+    type: Lesson
+  })
+  @ApiResponse({ status: 400, description: 'Некорректные данные' })
+  @ApiResponse({ status: 401, description: 'Не авторизован - отображается страница 401' })
+  @ApiResponse({ status: 403, description: 'Доступ запрещен - требуется роль TEACHER, отображается страница 403' })
+  @ApiResponse({ status: 404, description: 'Курс не найден или пользователь не является автором курса' })
   async create(@Body() createLessonDto: CreateLessonDto, @Req() req: Request) {
     // Проверяем, принадлежит ли курс этому преподавателю
     const course = await this.coursesService.findOne(createLessonDto.courseId);
@@ -174,6 +222,18 @@ export class LessonsController {
   @Patch('api/:id')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.TEACHER)
+  @ApiOperation({ 
+    summary: 'Обновить урок', 
+    description: 'Обновляет содержимое урока. Требуется роль TEACHER и авторство курса.' 
+  })
+  @ApiParam({ name: 'id', description: 'ID урока', type: 'string', format: 'uuid' })
+  @ApiBody({ type: UpdateLessonDto })
+  @ApiSecurity('auth-token')
+  @ApiResponse({ status: 200, description: 'Урок успешно обновлен' })
+  @ApiResponse({ status: 400, description: 'Некорректные данные' })
+  @ApiResponse({ status: 401, description: 'Не авторизован' })
+  @ApiResponse({ status: 403, description: 'Доступ запрещен - требуется роль TEACHER' })
+  @ApiResponse({ status: 404, description: 'Урок не найден или пользователь не является автором курса' })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateLessonDto: UpdateLessonDto,
@@ -201,6 +261,16 @@ export class LessonsController {
   @Delete('api/:id')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.TEACHER)
+  @ApiOperation({ 
+    summary: 'Удалить урок', 
+    description: 'Удаляет урок из курса. Требуется роль TEACHER и авторство курса.' 
+  })
+  @ApiParam({ name: 'id', description: 'ID урока', type: 'string', format: 'uuid' })
+  @ApiSecurity('auth-token')
+  @ApiResponse({ status: 200, description: 'Урок успешно удален' })
+  @ApiResponse({ status: 401, description: 'Не авторизован' })
+  @ApiResponse({ status: 403, description: 'Доступ запрещен - требуется роль TEACHER' })
+  @ApiResponse({ status: 404, description: 'Урок не найден или пользователь не является автором курса' })
   async remove(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
     const lesson = await this.lessonsService.findOne(id);
     

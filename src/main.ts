@@ -7,9 +7,47 @@ import * as expressLayouts from 'express-ejs-layouts';
 import * as methodOverride from 'method-override';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './filters/http-exception.filter';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // Настройка Swagger
+  const config = new DocumentBuilder()
+    .setTitle('Learning Platform API')
+    .setDescription('API документация для платформы онлайн-обучения')
+    .setVersion('1.0')
+    .addTag('admin', 'Управление системой (только для администраторов)')
+    .addTag('assignments', 'Задания к урокам')
+    .addTag('auth', 'Аутентификация и авторизация')
+    .addTag('categories', 'Категории курсов')
+    .addTag('courses', 'Учебные курсы')
+    .addTag('enrollments', 'Зачисления на курсы')
+    .addTag('lessons', 'Уроки курсов')
+    .addTag('progress', 'Прогресс обучения')
+    .addTag('submissions', 'Ответы на задания')
+    .addTag('users', 'Управление пользователями')
+    .addApiKey(
+      { 
+        type: 'apiKey', 
+        in: 'cookie',
+        name: 'auth_token',
+        description: 'Аутентификация через cookie. Получите токен через /auth/login'
+      },
+      'auth-token',
+    )
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  
+  // Добавляем документацию о ролях пользователей
+  document.components.schemas['UserRoles'] = {
+    type: 'string',
+    enum: ['ADMIN', 'TEACHER', 'STUDENT'],
+    description: 'Роли пользователей в системе'
+  };
+  
+  SwaggerModule.setup('api/docs', app, document);
 
   // Включаем валидацию данных
   app.useGlobalPipes(new ValidationPipe({

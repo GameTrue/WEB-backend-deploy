@@ -8,7 +8,9 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/entities/user.entity';
 import { Request } from 'express';
 import { AssignmentsService } from '../assignments/assignments.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('submissions')
 @Controller('submissions')
 export class SubmissionsController {
   constructor(
