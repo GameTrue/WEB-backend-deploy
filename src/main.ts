@@ -24,9 +24,9 @@ async function bootstrap() {
     .addTag('courses', 'Учебные курсы')
     .addTag('enrollments', 'Зачисления на курсы')
     .addTag('lessons', 'Уроки курсов')
-    .addTag('progress', 'Прогресс обучения')
+    // .addTag('progress', 'Прогресс обучения')
     .addTag('submissions', 'Ответы на задания')
-    .addTag('users', 'Управление пользователями')
+    // .addTag('users', 'Управление пользователями')
     .addApiKey(
       { 
         type: 'apiKey', 

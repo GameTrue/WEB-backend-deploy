@@ -254,6 +254,9 @@ class TeacherCourses {
           this.showNotification('warning', 'Курс удален', `Курс "${data.title}" был удален`);
           this.loadCourses();
         }
+        else {
+          this.showNotification('success', 'Тест', `Тест`);
+        }
       } catch (error) {
         console.error('Error parsing SSE event data:', error, event.data);
       }

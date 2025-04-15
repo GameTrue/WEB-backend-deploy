@@ -4,7 +4,7 @@ import { Response, Request } from 'express';
 import { UsersService } from '../users/users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -16,6 +16,14 @@ export class AuthController {
 
   @Post('register')
   @HttpCode(201)
+  @ApiOperation({ 
+    summary: 'Регистрация нового пользователя', 
+    description: 'Создает нового пользователя и возвращает токен авторизации в cookie' 
+  })
+  @ApiBody({ type: CreateUserDto })
+  @ApiResponse({ status: 201, description: 'Пользователь успешно зарегистрирован' })
+  @ApiResponse({ status: 409, description: 'Пользователь с таким email уже существует' })
+  @ApiResponse({ status: 400, description: 'Некорректные данные' })
   async register(
     @Body() createUserDto: CreateUserDto,
     @Req() req: Request,
@@ -44,6 +52,13 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(200)
+  @ApiOperation({ 
+    summary: 'Авторизация пользователя', 
+    description: 'Авторизует пользователя и возвращает токен в cookie' 
+  })
+  @ApiBody({ type: LoginUserDto })
+  @ApiResponse({ status: 200, description: 'Пользователь успешно авторизован, токен установлен' })
+  @ApiResponse({ status: 401, description: 'Неверные учетные данные' })
   async login(
     @Body() loginUserDto: LoginUserDto,
     @Req() req: Request,
@@ -66,6 +81,11 @@ export class AuthController {
 
   @Post('logout')
   @HttpCode(200)
+  @ApiOperation({ 
+    summary: 'Выход из системы', 
+    description: 'Инвалидирует текущую сессию и удаляет cookie авторизации' 
+  })
+  @ApiResponse({ status: 200, description: 'Пользователь успешно вышел из системы' })
   async logout(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
@@ -82,6 +102,23 @@ export class AuthController {
   }
 
   @Get('me')
+  @ApiOperation({ 
+    summary: 'Получить информацию о текущем пользователе', 
+    description: 'Возвращает данные о текущем авторизованном пользователе' 
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Информация о пользователе', 
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string', example: 'Иван Иванов' },
+        email: { type: 'string', example: 'user@example.com' },
+        role: { type: 'string', enum: ['admin', 'teacher', 'student'], example: 'student' }
+      }
+    }
+  })
+  @ApiResponse({ status: 401, description: 'Не авторизован' })
   async getCurrentUser(@Req() req: Request) {
     const token = req.cookies['auth_token'];
     
