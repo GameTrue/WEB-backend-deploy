@@ -66,25 +66,62 @@ type CourseType {
   updatedAt: DateTime!
 }
 
+input CreateCategoryInput {
+  """Описание категории"""
+  description: String
+
+  """Название категории"""
+  name: String!
+
+  """ID родительской категории"""
+  parentId: String
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
 
 type Mutation {
+  """Создать новую категорию"""
+  createCategory(input: CreateCategoryInput!): CategoryType!
+
+  """Удалить категорию"""
+  deleteCategory(id: String!): Boolean!
+
   """Удалить курс"""
   deleteCourse(id: String!): Boolean!
+
+  """Обновить категорию"""
+  updateCategory(id: String!, input: UpdateCategoryInput!): CategoryType!
 
   """Обновить курс"""
   updateCourse(id: String!, input: UpdateCourseInput!): CourseType!
 }
 
 type Query {
+  """Получить список всех категорий"""
+  categories: [CategoryType!]!
+
+  """Получить категорию по ID"""
+  category(id: String!): CategoryType!
+
   """Получить курс по ID"""
   course(id: String!): CourseType!
 
   """Получить список всех курсов"""
   courses: [CourseType!]!
+}
+
+input UpdateCategoryInput {
+  """Описание категории"""
+  description: String
+
+  """Название категории"""
+  name: String
+
+  """ID родительской категории"""
+  parentId: String
 }
 
 input UpdateCourseInput {

@@ -36,6 +36,32 @@ export class CategoriesService {
     return category;
   }
 
+  async findChildren(id: string): Promise<Category[]> {
+    const category = await this.categoriesRepository.find({
+      where: { parentId: id },
+      relations: ['children', 'parent']
+    });
+    
+    if (!category) {
+      throw new NotFoundException(`Category with ID ${id} not found`);
+    }
+    
+    return category;
+  }
+
+  async findParent(id: string): Promise<Category> {
+    const category = await this.categoriesRepository.findOne({
+      where: { id },
+      relations: ['children', 'parent']
+    });
+    
+    if (!category) {
+      throw new NotFoundException(`Category with ID ${id} not found`);
+    }
+    
+    return category;
+  }
+
   async update(id: string, updateCategoryDto: UpdateCategoryDto): Promise<Category> {
     const category = await this.findOne(id);
     
