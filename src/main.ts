@@ -39,6 +39,8 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
+
+  app.set('trust proxy', true) // Доверяем прокси-серверу, чтобы корректно обрабатывать заголовки X-Forwarded-*
   
   // Добавляем документацию о ролях пользователей
   document.components.schemas['UserRoles'] = {
@@ -77,7 +79,6 @@ async function bootstrap() {
   
   // Настройка статических файлов
   app.useStaticAssets(join(__dirname, '..', 'public'));
-  
   // Получение порта из переменных окружения или использование порта по умолчанию
   const port = process.env.PORT || 3000;
   await app.listen(port);

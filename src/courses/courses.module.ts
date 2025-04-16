@@ -8,6 +8,8 @@ import { AuthModule } from '../auth/auth.module';
 import { EnrollmentsModule } from '../enrollments/enrollments.module';
 import { ProgressModule } from '../progress/progress.module';
 import { Enrollment } from '../enrollments/entities/enrollment.entity';
+import { CoursesResolver } from './courses.resolver';
+
 
 @Module({
   imports: [
@@ -17,7 +19,7 @@ import { Enrollment } from '../enrollments/entities/enrollment.entity';
     ProgressModule
   ],
   controllers: [CoursesController],
-  providers: [CoursesService],
+  providers: [CoursesService, CoursesResolver],
   exports: [CoursesService]
 })
 export class CoursesModule {}

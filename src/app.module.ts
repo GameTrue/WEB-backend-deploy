@@ -14,6 +14,11 @@ import { AdminModule } from './admin/admin.module';
 import { AssignmentsModule } from './assignments/assignments.module';
 import { ProgressModule } from './progress/progress.module';
 import getTypeOrmConfig from './config/database.config';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { join } from 'path';
+
+
 
 @Module({
   imports: [
@@ -32,7 +37,18 @@ import getTypeOrmConfig from './config/database.config';
     SubmissionsModule,
     AssignmentsModule,
     AdminModule,
-    ProgressModule
+    ProgressModule,
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      sortSchema: true,
+      playground: true,
+      introspection: true,
+      context: ({ req, res }) => ({ req, res }),
+      validationRules: [
+        // Ограничение сложности запросов
+      ],
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,0 +1,130 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+"""Категория курсов"""
+type CategoryType {
+  """Дочерние категории"""
+  children: [CategoryType]!
+
+  """Курсы в данной категории"""
+  courses: [CourseType]!
+
+  """Описание категории"""
+  description: String
+
+  """Уникальный идентификатор категории"""
+  id: ID!
+
+  """Название категории"""
+  name: String!
+
+  """Родительская категория"""
+  parent: CategoryType
+
+  """ID родительской категории"""
+  parentId: ID
+}
+
+"""Уровень сложности курса"""
+enum CourseLevel {
+  ADVANCED
+  BEGINNER
+  INTERMEDIATE
+}
+
+"""Учебный курс"""
+type CourseType {
+  """Автор курса"""
+  author: UserType!
+
+  """Категория курса"""
+  category: CategoryType!
+
+  """Дата создания курса"""
+  createdAt: DateTime!
+
+  """Описание курса"""
+  description: String
+
+  """Уникальный идентификатор курса"""
+  id: ID!
+
+  """Уровень сложности курса"""
+  level: CourseLevel!
+
+  """Стоимость курса"""
+  price: Float!
+
+  """Опубликован ли курс"""
+  published: Boolean!
+
+  """Название курса"""
+  title: String!
+
+  """Дата последнего обновления курса"""
+  updatedAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Mutation {
+  """Удалить курс"""
+  deleteCourse(id: String!): Boolean!
+
+  """Обновить курс"""
+  updateCourse(id: String!, input: UpdateCourseInput!): CourseType!
+}
+
+type Query {
+  """Получить курс по ID"""
+  course(id: String!): CourseType!
+
+  """Получить список всех курсов"""
+  courses: [CourseType!]!
+}
+
+input UpdateCourseInput {
+  """ID категории курса"""
+  categoryId: String
+
+  """Описание курса"""
+  description: String
+
+  """Стоимость курса"""
+  price: Float
+
+  """Название курса"""
+  title: String
+}
+
+"""Роль пользователя в системе"""
+enum UserRole {
+  ADMIN
+  STUDENT
+  TEACHER
+}
+
+"""Пользователь системы"""
+type UserType {
+  """Дата создания аккаунта"""
+  createdAt: DateTime!
+
+  """Email пользователя"""
+  email: String!
+
+  """Уникальный идентификатор пользователя"""
+  id: ID!
+
+  """Имя пользователя"""
+  name: String!
+
+  """Роль пользователя в системе"""
+  role: UserRole!
+
+  """Дата последнего обновления аккаунта"""
+  updatedAt: DateTime!
+}
