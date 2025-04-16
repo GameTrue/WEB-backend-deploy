@@ -307,7 +307,7 @@ button {
 .main-media-links {
 	height: 200px;
     padding: 10px;
-    background-color: #CBCBCB;
+    background-color: var(--color-background-light);
     color: #000;
 	display: flex;
 	flex-direction: row;
@@ -336,6 +336,7 @@ button {
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
+	filter: drop-shadow(5px 4px 16px black);
 }
 
 footer {
@@ -346,7 +347,7 @@ footer {
 .left-contact {
 	width: 100%;
 	height: 300px;
-    background-color: var(--color-footer-left);
+    background-color: var(--color-footer-right);
     padding: 20px;
 	display: flex;
 	flex-direction: column;
