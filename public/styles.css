@@ -337,6 +337,7 @@ button {
     align-items: center;
     justify-content: space-between;
 	filter: drop-shadow(5px 4px 16px black);
+	cursor: pointer;
 }
 
 footer {
@@ -428,7 +429,7 @@ footer {
 	transition: ease 0.2s;
 }
 
-.main-media-container .temp img:hover {
+.main-media-container:hover .temp img {
 	width: 66px;
 	margin-top: -3px;
 	margin-left: -3px;
@@ -485,6 +486,7 @@ footer {
 	width: 80%;
 	min-width: 120px;
 	transition: ease 0.5s;
+	width: fit-content;
 }
 
 .filter-button:hover {
@@ -529,6 +531,8 @@ footer {
 	width: 90%;
 	min-width: fit-content;
 	color: var(--color-media-text);
+    display: flex;
+    flex-direction: column;
 }
 
 .filter-column form select,  .filter-column form input{
