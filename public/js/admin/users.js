@@ -143,7 +143,7 @@ class AdminUsers {
     
     users.forEach(user => {
       const statusClass = user.active ? 'status-active' : 'status-inactive';
-      const statusText = user.active ? 'Активен' : 'Заблокирован';
+      const statusText = user.active ? 'Активен' : 'Не активен';
       console.log(user);
       const row = document.createElement('tr');
       row.innerHTML = `

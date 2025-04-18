@@ -38,13 +38,15 @@ export class AdminService {
     const users = await this.userRepository.find({
       relations: ['sessions', 'enrollments']
     });
+
+    console.log
     
     return users.map(user => {
       const { password, ...userWithoutPassword } = user;
       return {
         ...userWithoutPassword,
         coursesCount: user.enrollments?.length || 0,
-        active: true  // В реальности это поле должно быть в базе
+        active: user.sessions.map(session => session.active).includes(true),
       };
     });
   }
