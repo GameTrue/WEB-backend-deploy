@@ -55,3 +55,62 @@ export class CoursesResolver {
 //     return this.coursesService.getCategory(course.categoryId);
 //   }
 }
+
+
+/*
+1. Получить список курсов:
+query {
+     courses {
+       id
+       title
+       description
+       price
+       category {
+         id
+         name
+       }
+     }
+   }
+   
+2. Получить курс по ID:
+query { 
+      course(id: "550e8400-e29b-41d4-a716-446655440001") {
+        id
+        title
+        description
+        price
+        category {
+          id
+          name
+        }
+      }
+    }
+
+3. Создать курс:
+mutation {
+      createCourse(input: {
+        title: "Новый курс",
+        description: "Описание нового курса",
+        price: 99.99,
+        categoryId: "550e8400-e29b-41d4-a716-446655440002"
+      }) {
+        id
+        title
+        description
+        price
+      }
+    }
+4. Обновить курс: 
+mutation {
+      updateCourse(id: "550e8400-e29b-41d4-a716-446655440001", input: {
+        title: "Обновленный курс",
+        description: "Обновленное описание",
+        price: 79.99
+      }) {
+        id
+        title
+        description
+        price
+      }
+    }
+*/

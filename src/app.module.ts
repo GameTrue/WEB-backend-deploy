@@ -17,17 +17,15 @@ import getTypeOrmConfig from './config/database.config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
+import { createComplexityRule } from 'graphql-query-complexity';
+
 
 
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-    TypeOrmModule.forRootAsync({
-      useFactory: getTypeOrmConfig,
-    }),
+    ConfigModule.forRoot({ isGlobal: true }),
+    TypeOrmModule.forRootAsync({ useFactory: getTypeOrmConfig }),
     AuthModule,
     UsersModule,
     CoursesModule,
@@ -47,6 +45,7 @@ import { join } from 'path';
       context: ({ req, res }) => ({ req, res }),
       validationRules: [
         // Ограничение сложности запросов
+        
       ],
     }),
   ],

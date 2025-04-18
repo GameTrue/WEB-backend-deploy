@@ -2,6 +2,30 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+"""Задание к уроку"""
+type AssignmentType {
+  """Крайний срок сдачи задания"""
+  deadline: DateTime
+
+  """Подробное описание задания"""
+  description: String!
+
+  """Уникальный идентификатор задания"""
+  id: ID!
+
+  """Урок, к которому относится задание"""
+  lesson: LessonType!
+
+  """Идентификатор урока, к которому относится задание"""
+  lessonId: String!
+
+  """Максимальное количество баллов за задание"""
+  maxScore: Int!
+
+  """Название задания"""
+  title: String!
+}
+
 """Категория курсов"""
 type CategoryType {
   """Дочерние категории"""
@@ -66,6 +90,23 @@ type CourseType {
   updatedAt: DateTime!
 }
 
+input CreateAssignmentInput {
+  """Крайний срок сдачи задания"""
+  deadline: DateTime
+
+  """Подробное описание задания"""
+  description: String!
+
+  """Идентификатор урока, к которому относится задание"""
+  lessonId: String!
+
+  """Максимальное количество баллов за задание"""
+  maxScore: Int = 100
+
+  """Название задания"""
+  title: String!
+}
+
 input CreateCategoryInput {
   """Описание категории"""
   description: String
@@ -82,15 +123,60 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+"""Урок курса"""
+type LessonType {
+  """Задания к уроку"""
+  assignments: [AssignmentType]!
+
+  """Содержимое урока в формате Markdown"""
+  content: String!
+
+  """Курс, к которому относится урок"""
+  course: CourseType
+
+  """ID курса, к которому относится урок"""
+  courseId: String!
+
+  """Дата создания урока"""
+  createdAt: DateTime!
+
+  """Продолжительность урока в минутах"""
+  duration: Int
+
+  """Уникальный идентификатор урока"""
+  id: ID!
+
+  """Порядковый номер урока в курсе"""
+  order: Int!
+
+  """Статистика прохождения урока"""
+  progressStats: ProgressStatsType
+
+  """Название урока"""
+  title: String!
+
+  """Дата последнего обновления урока"""
+  updatedAt: DateTime!
+}
+
 type Mutation {
+  """Создать новое задание"""
+  createAssignment(input: CreateAssignmentInput!): AssignmentType!
+
   """Создать новую категорию"""
   createCategory(input: CreateCategoryInput!): CategoryType!
+
+  """Удалить задание"""
+  deleteAssignment(id: String!): Boolean!
 
   """Удалить категорию"""
   deleteCategory(id: String!): Boolean!
 
   """Удалить курс"""
   deleteCourse(id: String!): Boolean!
+
+  """Обновить задание"""
+  updateAssignment(id: String!, input: UpdateAssignmentInput!): AssignmentType!
 
   """Обновить категорию"""
   updateCategory(id: String!, input: UpdateCategoryInput!): CategoryType!
@@ -99,7 +185,22 @@ type Mutation {
   updateCourse(id: String!, input: UpdateCourseInput!): CourseType!
 }
 
+"""Статистика прохождения урока"""
+type ProgressStatsType {
+  """Количество студентов, завершивших урок"""
+  completed: Int!
+
+  """Количество студентов, начавших урок"""
+  started: Int!
+}
+
 type Query {
+  """Получить задание по ID"""
+  assignment(id: String!): AssignmentType!
+
+  """Получить задания урока"""
+  assignmentsByLesson(lessonId: String!): [AssignmentType!]!
+
   """Получить список всех категорий"""
   categories: [CategoryType!]!
 
@@ -111,6 +212,20 @@ type Query {
 
   """Получить список всех курсов"""
   courses: [CourseType!]!
+}
+
+input UpdateAssignmentInput {
+  """Крайний срок сдачи задания"""
+  deadline: DateTime
+
+  """Подробное описание задания"""
+  description: String
+
+  """Максимальное количество баллов за задание"""
+  maxScore: Int
+
+  """Название задания"""
+  title: String
 }
 
 input UpdateCategoryInput {

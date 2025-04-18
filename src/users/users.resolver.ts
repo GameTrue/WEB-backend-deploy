@@ -51,3 +51,8 @@ export class UsersResolver {
 //     return true;
 //   }
 }
+
+/*
+1. Получение списка всех пользователей (users):
+
+*/

@@ -40,7 +40,7 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
 
-  app.set('trust proxy', true) // Доверяем прокси-серверу, чтобы корректно обрабатывать заголовки X-Forwarded-*
+  app.set('trust proxy', true) 
   
   // Добавляем документацию о ролях пользователей
   document.components.schemas['UserRoles'] = {

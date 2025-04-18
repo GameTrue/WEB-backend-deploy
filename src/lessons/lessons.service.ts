@@ -154,7 +154,7 @@ export class LessonsService {
     if (lessons.length === 0) return false;
     
     // Получаем все завершенные уроки пользователя в этом курсе
-    const completedLessonIds = await this.progressRepository.find({
+    const completedLessons = await this.progressRepository.find({
       where: {
         userId,
         status: ProgressStatus.COMPLETED,
@@ -164,8 +164,8 @@ export class LessonsService {
       },
       relations: ['lesson']
     });
-    
-    // Проверяем, все ли уроки завершены
-    return completedLessonIds.length === lessons.length;
+
+    // Если количество завершенных уроков равно общему количеству уроков курса, значит все уроки завершены
+    return completedLessons.length === lessons.length;
   }
 }
