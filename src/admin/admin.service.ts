@@ -13,6 +13,8 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Progress } from '../progress/entities/progress.entity';
 import { Submission } from '../submissions/entities/submission.entity';
 import { randomBytes, createHash } from 'crypto';
+import { StorageService } from '../storage/storage.service';
+import * as path from 'path';
 
 @Injectable()
 export class AdminService {
@@ -31,6 +33,7 @@ export class AdminService {
     private readonly progressRepository: Repository<Progress>,
     @InjectRepository(Submission)
     private readonly submissionRepository: Repository<Submission>,
+    private storageService: StorageService
   ) {}
 
   // Методы для управления пользователями
@@ -180,6 +183,40 @@ export class AdminService {
     await this.sessionRepository.remove(session);
     
     return { success: true };
+  }
+
+  /**
+   * Обновить аватар пользователя
+   * @param id ID пользователя
+   * @param file Загруженный файл аватара
+   * @returns Обновленные данные пользователя
+   */
+  async updateUserAvatar(id: string, file: Express.Multer.File) {
+    // Проверяем наличие пользователя
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`Пользователь с ID ${id} не найден`);
+    }
+
+    // Получаем расширение файла
+    const fileExtension = path.extname(file.originalname);
+    
+    // Генерируем путь для хранения в объектном хранилище
+    const avatarPath = this.storageService.generateAvatarPath(id, fileExtension);
+    
+    // Загружаем файл в хранилище и получаем URL
+    const avatarUrl = await this.storageService.uploadFile(file, avatarPath);
+    
+    // Обновляем данные пользователя
+    user.avatar = avatarUrl;
+    await this.userRepository.save(user);
+    
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar
+    };
   }
 
   // Методы для управления курсами

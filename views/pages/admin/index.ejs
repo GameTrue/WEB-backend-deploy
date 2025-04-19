@@ -25,6 +25,16 @@
     </div>
   </section>
   
+  <section class="admin-section">
+    <h2>Управление системой</h2>
+    
+    <div class="admin-card">
+      <h3>Управление кэшем</h3>
+      <p>Если вы видите устаревшие данные или возникли проблемы с отображением информации, попробуйте очистить кэш.</p>
+      <button onclick="clearCoursesCache()" class="btn btn-danger">Очистить кэш курсов</button>
+    </div>
+  </section>
+  
   <!-- Модальные окна -->
   <%- include('./components/edit-user-modal') %>
   <%- include('./components/view-user-modal') %>
@@ -42,3 +52,4 @@
 <script src="/js/admin/categories.js"></script>
 <script src="/js/admin/statistics.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="/js/admin/cache-manager.js"></script>

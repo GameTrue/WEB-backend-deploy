@@ -13,19 +13,24 @@ import { SubmissionsModule } from './submissions/submissions.module';
 import { AdminModule } from './admin/admin.module';
 import { AssignmentsModule } from './assignments/assignments.module';
 import { ProgressModule } from './progress/progress.module';
+import { StorageModule } from './storage/storage.module';
 import getTypeOrmConfig from './config/database.config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { createComplexityRule } from 'graphql-query-complexity';
-
-
+import { CacheModule } from '@nestjs/cache-manager';
 
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({ useFactory: getTypeOrmConfig }),
+    CacheModule.register({
+      isGlobal: true,
+      ttl: 10, // time to live in seconds
+      max: 100, // maximum number of items in cache
+    }),
     AuthModule,
     UsersModule,
     CoursesModule,
@@ -36,6 +41,7 @@ import { createComplexityRule } from 'graphql-query-complexity';
     AssignmentsModule,
     AdminModule,
     ProgressModule,
+    StorageModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),

@@ -50,12 +50,4 @@ export class UpdateUserDto {
   @IsOptional()
   avatar?: string;
 
-  @ApiProperty({
-    description: 'Активен ли пользователь',
-    example: true,
-    required: false
-  })
-  @IsBoolean()
-  @IsOptional()
-  active?: boolean;
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, Req, Res, Render, UseGuards, NotFoundException, Sse, ParseUUIDPipe, Query, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, Req, Res, Render, UseGuards, NotFoundException, Sse, ParseUUIDPipe, Query, BadRequestException, Inject } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { CoursesService } from './courses.service';
 import { AuthGuard } from '../auth/guards/auth.guard';
@@ -15,6 +15,8 @@ import { ProgressService } from '../progress/progress.service';
 import { Lesson } from 'src/lessons/entities/lesson.entity';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiSecurity, ApiQuery } from '@nestjs/swagger';
 import { Course } from './entities/course.entity';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @ApiTags('courses')
 @Controller('courses')
@@ -23,7 +25,8 @@ export class CoursesController {
     private readonly coursesService: CoursesService,
     private readonly authService: AuthService,
     private readonly enrollmentsService: EnrollmentsService,
-    private readonly progressService: ProgressService
+    private readonly progressService: ProgressService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache
   ) {}
 
   @Get('my')
@@ -272,6 +275,68 @@ export class CoursesController {
     return { success: true };
   }
 
+  // Keep the DELETE endpoint for API clients
+  @Delete('api/cache')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ 
+    summary: 'Очистить кэш курсов (DELETE)', 
+    description: 'Очищает весь кэш курсов. Требуется роль ADMIN.' 
+  })
+  @ApiSecurity('auth-token')
+  @ApiResponse({ status: 200, description: 'Кэш успешно очищен' })
+  @ApiResponse({ status: 401, description: 'Не авторизован' })
+  @ApiResponse({ status: 403, description: 'Доступ запрещен - требуется роль ADMIN' })
+  async clearCacheDelete(@Req() req: Request) {
+    return this.clearCacheImplementation(req);
+  }
+
+  // Add a POST endpoint for browser forms
+  @Post('api/cache/clear')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ 
+    summary: 'Очистить кэш курсов (POST)', 
+    description: 'Очищает весь кэш курсов. Требуется роль ADMIN.' 
+  })
+  @ApiSecurity('auth-token')
+  @ApiResponse({ status: 200, description: 'Кэш успешно очищен' })
+  @ApiResponse({ status: 401, description: 'Не авторизован' })
+  @ApiResponse({ status: 403, description: 'Доступ запрещен - требуется роль ADMIN' })
+  async clearCachePost(@Req() req: Request) {
+    return this.clearCacheImplementation(req);
+  }
+
+  private async clearCacheImplementation(req: Request) {
+    console.log('Clearing cache for admin:', req.user.email, 'with role:', req.user.role);
+    
+    const cacheKeys = [
+      'all_courses',
+      'available_courses'
+    ];
+    
+    for (const key of cacheKeys) {
+      await this.cacheManager.del(key);
+    }
+    
+    const courses = await this.coursesService.findAll();
+    for (const course of courses) {
+      await this.cacheManager.del(`course_${course.id}`);
+    }
+    
+    const authors = [...new Set(courses.map(course => course.authorId))];
+    for (const authorId of authors) {
+      await this.cacheManager.del(`author_courses_${authorId}`);
+    }
+    
+    console.log('Cache cleared by admin:', req.user.email);
+    
+    return { 
+      success: true, 
+      message: 'Кэш курсов успешно очищен' 
+    };
+  }
+
   @Sse('events')
   @UseGuards(AuthGuard)
   @ApiOperation({ 
@@ -304,6 +369,23 @@ export class CoursesController {
         }) as MessageEvent)
       )
     );
+  }
+
+  @Get('api/debug-role')
+  @UseGuards(AuthGuard)
+  async debugRole(@Req() req: Request) {
+    return {
+      userRole: req.user.role,
+      userRoleType: typeof req.user.role,
+      isAdmin: req.user.role === UserRole.ADMIN,
+      adminRoleValue: UserRole.ADMIN,
+      userObject: {
+        id: req.user.id,
+        email: req.user.email,
+        name: req.user.name,
+        role: req.user.role
+      }
+    };
   }
 
   // /**

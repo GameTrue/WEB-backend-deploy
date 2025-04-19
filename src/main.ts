@@ -8,6 +8,9 @@ import * as methodOverride from 'method-override';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './filters/http-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { TimingInterceptor } from './interceptors/timing.interceptor';
+import { EtagInterceptor } from './interceptors/etag.interceptor';
+
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -58,8 +61,13 @@ async function bootstrap() {
     forbidNonWhitelisted: true,
   }));
 
-  // Apply global exception filter for error pages
   app.useGlobalFilters(new HttpExceptionFilter());
+  
+  // Register global interceptors
+  app.useGlobalInterceptors(
+    new TimingInterceptor(),
+    new EtagInterceptor()
+  );
 
   // Подключаем cookie-parser
   app.use(cookieParser());

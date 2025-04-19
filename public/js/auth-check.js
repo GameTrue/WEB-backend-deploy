@@ -40,6 +40,9 @@ document.addEventListener('DOMContentLoaded', function() {
           authButtons.innerHTML = `
             <div class="user-panel">
               <span class="user-greeting">Привет, ${userData.name}!</span>
+              <div class="user-avatar">
+                <img src="${userData.avatar}" alt="User Avatar">
+              </div>
               <button class="register-btn main-button" id="logout-btn">Выйти</button>
             </div>
           `;

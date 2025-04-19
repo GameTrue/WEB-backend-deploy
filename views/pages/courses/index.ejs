@@ -112,7 +112,7 @@
     // Загрузка категорий для фильтра
     async function loadCategories() {
       try {
-        const response = await fetch('/categories/api');
+        const response = await fetch('/api/categories');
         
         if (!response.ok) {
           throw new Error('Failed to load categories');

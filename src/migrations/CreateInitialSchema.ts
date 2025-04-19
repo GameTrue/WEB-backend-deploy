@@ -23,6 +23,7 @@ export class CreateInitialSchema1712940885624 implements MigrationInterface {
         "role" "public"."user_role_enum" NOT NULL DEFAULT 'student',
         "created_at" TIMESTAMP NOT NULL DEFAULT now(),
         "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
+        "avatar" character varying,
         CONSTRAINT "UQ_users_email" UNIQUE ("email"),
         CONSTRAINT "PK_users" PRIMARY KEY ("id")
       )

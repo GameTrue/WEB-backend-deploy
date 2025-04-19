@@ -25,7 +25,8 @@ export class UsersService {
       email: createUserDto.email,
       password: hashedPassword,
       name: createUserDto.name,
-      role: createUserDto.role || UserRole.ADMIN
+      role: createUserDto.role || UserRole.STUDENT,
+      avatar: createUserDto.avatar || "https://course-bucket.storage.yandexcloud.net/avatars/fb54f6a6-f01e-4600-82d6-a7345d456d96.png",
     });
     
     return await this.usersRepository.save(user);

@@ -14,6 +14,12 @@ class AdminUsers {
     // Модальные окна
     this.editUserModal = document.getElementById('edit-user-modal');
     this.viewUserModal = document.getElementById('view-user-modal');
+    
+    // Элементы загрузки аватара
+    this.avatarFile = document.getElementById('avatar-file');
+    this.uploadAvatarBtn = document.getElementById('upload-avatar-btn');
+    this.avatarPreviewImg = document.getElementById('avatar-preview-img');
+    this.currentUserId = null;
   }
 
   async init() {
@@ -62,6 +68,15 @@ class AdminUsers {
           this.closeModal(this.editUserModal);
         });
       });
+      
+      // Обработка загрузки аватара
+      if (this.avatarFile) {
+        this.avatarFile.addEventListener('change', this.handleFileSelect.bind(this));
+      }
+      
+      if (this.uploadAvatarBtn) {
+        this.uploadAvatarBtn.addEventListener('click', this.uploadAvatar.bind(this));
+      }
     }
     
     // События для модального окна просмотра
@@ -144,32 +159,40 @@ class AdminUsers {
     users.forEach(user => {
       const statusClass = user.active ? 'status-active' : 'status-inactive';
       const statusText = user.active ? 'Активен' : 'Не активен';
-      console.log(user);
+      // console.log(user);
       const row = document.createElement('tr');
+      
+      let lastSession = null;
+      if (user.sessions && user.sessions.length > 0) {
+        lastSession = user.sessions.reduce((latest, current) => 
+          new Date(current.createdAt) > new Date(latest.createdAt) ? current : latest
+        );
+      }
+      
       row.innerHTML = `
         <td>
           <div class="user-info">
-            <img src="${user.avatar || 'https://via.placeholder.com/40'}" alt="${user.name}" class="avatar">
-            <div>
-              <div class="user-name">${user.name}</div>
-              <div class="user-email">${user.email}</div>
-            </div>
+        <img src="${user.avatar || 'https://via.placeholder.com/40'}" alt="${user.name}" class="avatar">
+        <div>
+          <div class="user-name">${user.name}</div>
+          <div class="user-email">${user.email}</div>
+        </div>
           </div>
         </td>
         <td><span class="user-role">${this.formatRole(user.role)}</span></td>
         <td>${new Date(user.createdAt).toLocaleDateString()}</td>
         <td><span class="status-pill ${statusClass}">${statusText}</span></td>
         <td>${user.coursesCount || 0}</td>
-        <td>${user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Никогда'}</td>
+        <td>${lastSession ? new Date(lastSession.createdAt).toLocaleString() : 'Никогда'}</td>
         <td>
           <div class="admin-actions">
-            <button class="admin-action view" title="Просмотр" data-action="view" data-id="${user.id}">👁️</button>
-            <button class="admin-action edit" title="Редактировать" data-action="edit" data-id="${user.id}">✏️</button>
-            <button class="admin-action delete" title="Удалить" data-action="delete" data-id="${user.id}">🗑️</button>
+        <button class="admin-action view" title="Просмотр" data-action="view" data-id="${user.id}">👁️</button>
+        <button class="admin-action edit" title="Редактировать" data-action="edit" data-id="${user.id}">✏️</button>
+        <button class="admin-action delete" title="Удалить" data-action="delete" data-id="${user.id}">🗑️</button>
           </div>
         </td>
       `;
-      
+      // console.log(new Date(user.sessions[user.sessions.length-1].createdAt));
       this.usersTableBody.appendChild(row);
     });
   }
@@ -253,6 +276,13 @@ class AdminUsers {
 
   fillViewUserModal(user) {
     if (!this.viewUserModal) return;
+
+    let lastSession = null;
+    if (user.sessions && user.sessions.length > 0) {
+      lastSession = user.sessions.reduce((latest, current) => 
+        new Date(current.createdAt) > new Date(latest.createdAt) ? current : latest
+      );
+    }
     
     // Заполняем основные данные
     this.viewUserModal.querySelector('#profile-name').textContent = user.name;
@@ -266,8 +296,8 @@ class AdminUsers {
     this.viewUserModal.querySelector('#profile-id').textContent = user.id;
     this.viewUserModal.querySelector('#profile-role').textContent = this.formatRole(user.role);
     this.viewUserModal.querySelector('#profile-created').textContent = new Date(user.createdAt).toLocaleDateString();
-    this.viewUserModal.querySelector('#profile-last-login').textContent = user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Никогда';
-    
+    this.viewUserModal.querySelector('#profile-last-login').textContent = lastSession ? new Date(lastSession.createdAt).toLocaleString() : 'Никогда';
+
     // Заполняем курсы
     const coursesElem = this.viewUserModal.querySelector('#profile-courses');
     if (user.courses && user.courses.length > 0) {
@@ -321,6 +351,7 @@ class AdminUsers {
   }
 
   editUser(userId) {
+    this.currentUserId = userId; // Сохраняем ID текущего пользователя
     const user = this.users.find(u => u.id === userId);
     if (!user) return;
     
@@ -343,6 +374,20 @@ class AdminUsers {
     }
     
     this.editUserModal.querySelector('#user-password').value = '';
+    
+    // Обновляем превью аватара
+    if (this.avatarPreviewImg) {
+      this.avatarPreviewImg.src = user.avatar || 'https://i.imgur.com/oxu8p7O.png';
+    }
+    
+    // Сбрасываем поле выбора файла и деактивируем кнопку загрузки
+    if (this.avatarFile) {
+      this.avatarFile.value = '';
+    }
+    
+    if (this.uploadAvatarBtn) {
+      this.uploadAvatarBtn.disabled = true;
+    }
   }
 
   async updateUser(e) {
@@ -358,7 +403,7 @@ class AdminUsers {
       name: formData.get('name'),
       email: formData.get('email'),
       role: formData.get('role'),
-      active: formData.get('active') === 'on',
+      // active: formData.get('active') === 'on',
       avatar: formData.get('avatar') || null
     };
     
@@ -463,5 +508,90 @@ class AdminUsers {
 
   async refresh() {
     await this.loadUsers();
+  }
+
+  // Обработчик выбора файла
+  handleFileSelect() {
+    if (!this.avatarFile || !this.uploadAvatarBtn || !this.avatarPreviewImg) return;
+    
+    const file = this.avatarFile.files[0];
+    if (!file) {
+      this.uploadAvatarBtn.disabled = true;
+      return;
+    }
+    
+    // Активируем кнопку загрузки
+    this.uploadAvatarBtn.disabled = false;
+    
+    // Показываем превью выбранного изображения
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.avatarPreviewImg.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // Загрузка аватара на сервер
+  async uploadAvatar() {
+    if (!this.avatarFile || !this.currentUserId) return;
+    
+    const file = this.avatarFile.files[0];
+    if (!file) return;
+    
+    try {
+      // Создаем объект FormData для отправки файла
+      const formData = new FormData();
+      formData.append('avatar', file);
+      
+      // Отключаем кнопку на время загрузки
+      if (this.uploadAvatarBtn) {
+        this.uploadAvatarBtn.disabled = true;
+        this.uploadAvatarBtn.textContent = 'Загрузка...';
+      }
+      
+      // Отправляем запрос на загрузку аватара
+      const response = await fetch(`/api/admin/users/${this.currentUserId}/avatar`, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Ошибка загрузки аватара');
+      }
+      
+      const result = await response.json();
+      
+      // Обновляем URL аватара в поле ввода
+      const avatarUrlInput = this.editUserModal.querySelector('#user-avatar');
+      if (avatarUrlInput) {
+        avatarUrlInput.value = result.avatar;
+      }
+      
+      // Сбрасываем поле выбора файла
+      if (this.avatarFile) {
+        this.avatarFile.value = '';
+      }
+      
+      // Возвращаем исходный текст кнопки
+      if (this.uploadAvatarBtn) {
+        this.uploadAvatarBtn.textContent = 'Загрузить аватар';
+        this.uploadAvatarBtn.disabled = true;
+      }
+      
+      // Показываем уведомление об успешной загрузке
+      alert('Аватар успешно загружен');
+      
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      alert(`Ошибка при загрузке аватара: ${error.message}`);
+      
+      // Возвращаем исходный текст кнопки
+      if (this.uploadAvatarBtn) {
+        this.uploadAvatarBtn.textContent = 'Загрузить аватар';
+        this.uploadAvatarBtn.disabled = false;
+      }
+    }
   }
 }

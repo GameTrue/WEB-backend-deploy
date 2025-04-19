@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, Req, Render, ParseUUIDPipe, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, Req, Render, ParseUUIDPipe, NotFoundException, ForbiddenException, BadRequestException, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -9,7 +9,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiSecurity, ApiQuery } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiSecurity, ApiQuery, ApiConsumes } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('admin')
 @Controller('api/admin')
@@ -116,6 +117,53 @@ export class AdminController {
     @Param('sessionId', ParseUUIDPipe) sessionId: string
   ) {
     return this.adminService.terminateUserSession(userId, sessionId);
+  }
+
+  @Post('users/:id/avatar')
+  @UseInterceptors(FileInterceptor('avatar', {
+    limits: {
+      fileSize: 2 * 1024 * 1024, // 2 МБ максимальный размер
+    },
+    fileFilter: (req, file, callback) => {
+      if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+        return callback(new BadRequestException('Только изображения допустимы'), false);
+      }
+      callback(null, true);
+    }
+  }))
+  @ApiOperation({ 
+    summary: 'Загрузить аватар пользователя', 
+    description: 'Загружает и устанавливает аватар для пользователя. Требуется роль ADMIN.' 
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiParam({ name: 'id', description: 'ID пользователя' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        avatar: {
+          type: 'string',
+          format: 'binary',
+          description: 'Файл аватара (поддерживаются jpg, jpeg, png, gif)'
+        }
+      }
+    }
+  })
+  @ApiSecurity('auth-token')
+  @ApiResponse({ status: 200, description: 'Аватар пользователя успешно обновлен' })
+  @ApiResponse({ status: 400, description: 'Неверные данные - файл слишком большой или неправильный формат' })
+  @ApiResponse({ status: 401, description: 'Не авторизован' })
+  @ApiResponse({ status: 403, description: 'Доступ запрещен - требуется роль ADMIN' })
+  @ApiResponse({ status: 404, description: 'Пользователь не найден' })
+  async uploadAvatar(
+    @Param('id', ParseUUIDPipe) id: string,
+    @UploadedFile() file: Express.Multer.File
+  ) {
+    if (!file) {
+      throw new BadRequestException('Файл аватара не предоставлен');
+    }
+    
+    return this.adminService.updateUserAvatar(id, file);
   }
 
   // Методы для управления курсами

@@ -35,6 +35,23 @@
         <div class="admin-form-group">
           <label for="user-avatar">URL аватара</label>
           <input type="text" id="user-avatar" name="avatar">
+          <small class="form-text text-muted">Это поле заполняется автоматически при загрузке изображения ниже.</small>
+        </div>
+
+        <div class="avatar-section">
+          <h3>Аватар пользователя</h3>
+          <div class="avatar-upload">
+            <div class="avatar-preview">
+              <img id="avatar-preview-img" src="https://i.imgur.com/oxu8p7O.png" alt="Аватар пользователя">
+            </div>
+            <div class="avatar-controls">
+              <form id="avatar-upload-form" enctype="multipart/form-data">
+                <input type="file" id="avatar-file" name="avatar" accept="image/jpeg,image/png,image/gif" class="avatar-file-input">
+                <button type="button" id="upload-avatar-btn" class="avatar-upload-btn" disabled>Загрузить аватар</button>
+                <div class="upload-status"></div>
+              </form>
+            </div>
+          </div>
         </div>
         
         <div class="admin-form-group checkbox">
@@ -42,6 +59,9 @@
           <label for="user-active">Активен</label>
         </div>
       </form>
+
+      <!-- Загрузка аватара -->
+      
     </div>
     <div class="admin-modal-footer">
       <button class="admin-button" id="save-user-btn">Сохранить</button>

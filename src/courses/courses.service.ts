@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Course } from './entities/course.entity';
@@ -7,6 +7,8 @@ import { UpdateCourseDto } from './dto/update-course.dto';
 import { Category } from '../categories/entities/category.entity';
 import { Enrollment, EnrollmentStatus } from '../enrollments/entities/enrollment.entity';
 import { Subject, Observable } from 'rxjs';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class CoursesService {
@@ -19,6 +21,7 @@ export class CoursesService {
     private categoriesRepository: Repository<Category>,
     @InjectRepository(Enrollment)
     private enrollmentsRepository: Repository<Enrollment>,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async create(createCourseDto: CreateCourseDto): Promise<Course> {
@@ -39,14 +42,29 @@ export class CoursesService {
   }
 
   async findAll(): Promise<Course[]> {
-    return this.coursesRepository.find({ 
+    const cachedCourses = await this.cacheManager.get<Course[]>('all_courses');
+    if (cachedCourses) {
+      return cachedCourses;
+    }
+    
+    const courses = await this.coursesRepository.find({ 
       where: { published: true },
       relations: ['author', 'category'] 
     });
+    
+    await this.cacheManager.set('all_courses', courses);
+    
+    return courses;
   }
 
   async findByAuthorId(authorId: string, options?: { relations?: any }): Promise<Course[]> {
-    return this.coursesRepository.find({ 
+    const cacheKey = `author_courses_${authorId}`;
+    const cachedCourses = await this.cacheManager.get<Course[]>(cacheKey);
+    if (cachedCourses) {
+      return cachedCourses;
+    }
+    
+    const courses = await this.coursesRepository.find({ 
       where: { authorId },
       relations: options?.relations || {
         author: true,
@@ -56,16 +74,28 @@ export class CoursesService {
       },
       order: { createdAt: 'DESC' } 
     });
+    
+    // Store in cache
+    await this.cacheManager.set(cacheKey, courses);
+    
+    return courses;
   }
 
   async findOne(id: string, options?: { relations?: any }): Promise<Course> {
+    // Check if data is in cache
+    const cacheKey = `course_${id}`;
+    const cachedCourse = await this.cacheManager.get<Course>(cacheKey);
+    if (cachedCourse) {
+      return cachedCourse;
+    }
+    
     const course = await this.coursesRepository.findOne({ 
       where: { id },
       relations: options?.relations || {
-      author: true,
-      category: true,
-      lessons: true,
-      enrollments: {
+        author: true,
+        category: true,
+        lessons: true,
+        enrollments: {
           user: true
         }
       } 
@@ -74,6 +104,9 @@ export class CoursesService {
     if (!course) {
       throw new NotFoundException(`Course with ID ${id} not found`);
     }
+    
+    // Store in cache
+    await this.cacheManager.set(cacheKey, course);
     
     return course;
   }
@@ -93,6 +126,8 @@ export class CoursesService {
       Object.assign(course, updateCourseDto);
       const updatedCourse = await this.coursesRepository.save(course);
       
+      await this.invalidateCourseCache(id);
+      
       return updatedCourse;
     }
     
@@ -102,6 +137,8 @@ export class CoursesService {
   async remove(id: string): Promise<void> {
     const course = await this.findOne(id);
     await this.coursesRepository.remove(course);
+    
+    await this.invalidateCourseCache(id);
     
     this.courseEvents.next({
       action: 'delete',
@@ -143,21 +180,36 @@ export class CoursesService {
     await this.enrollmentsRepository.save(enrollment);
   }
 
-
   async countByAuthorId(authorId: string): Promise<number> {
     return this.coursesRepository.count({
       where: { authorId }
     });
   }
 
-
   async findAvailable(options?: { relations?: any }): Promise<Course[]> {
-    return this.coursesRepository.find({
+    // Check if data is in cache
+    const cacheKey = 'available_courses';
+    const cachedCourses = await this.cacheManager.get<Course[]>(cacheKey);
+    if (cachedCourses) {
+      return cachedCourses;
+    }
+    
+    const courses = await this.coursesRepository.find({
       where: { published: true },
       relations: options?.relations || {},
       order: {
         updatedAt: 'DESC'
       }
     });
+    
+    await this.cacheManager.set(cacheKey, courses);
+    
+    return courses;
+  }
+
+  private async invalidateCourseCache(courseId: string): Promise<void> {
+    await this.cacheManager.del(`course_${courseId}`);
+    
+    await this.cacheManager.del('all_courses');
   }
 }

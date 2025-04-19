@@ -39,4 +39,13 @@ export class CreateUserDto {
   @IsOptional()
   @IsEnum(UserRole, { message: 'Некорректная роль пользователя' })
   role?: UserRole;
+
+
+  @ApiProperty({
+    description: 'URL аватара пользователя',
+    example: 'https://example.com/avatar.jpg',
+    required: false
+  })
+  @IsOptional()
+  avatar?: string = "https://course-bucket.storage.yandexcloud.net/avatars/fb54f6a6-f01e-4600-82d6-a7345d456d96.png";
 }

@@ -44,6 +44,14 @@ export class User {
   name: string;
 
   @ApiProperty({
+    description: 'URL аватара пользователя',
+    example: 'https://storage.yandexcloud.net/course-bucket/avatars/user-id.jpg',
+    nullable: true
+  })
+  @Column({ nullable: true })
+  avatar: string;
+
+  @ApiProperty({
     description: 'Роль пользователя в системе',
     enum: UserRole,
     example: UserRole.STUDENT,
