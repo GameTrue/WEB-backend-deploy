@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: web-backend
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:prod
+    envVars:
+      - key: NODE_OPTIONS
+        value: --max-old-space-size=2048
+    plan: standard
