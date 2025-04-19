@@ -181,7 +181,7 @@
   background-color: #f9fafb;
 }
 
-.admin-table .avatar {
+.admin-table .avatar, .user-profile-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
