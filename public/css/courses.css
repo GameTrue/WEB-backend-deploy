@@ -3,6 +3,7 @@
   padding: 2%;
   background-color: var(--color-background-light);
   color: var(--color-text-dark);
+  min-height: 100vh;
 }
 
 .courses-header {

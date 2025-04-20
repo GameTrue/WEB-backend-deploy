@@ -4,6 +4,7 @@
   margin: 0 auto;
   padding: 2%;
   color: var(--color-text-dark);
+  min-height: 100vh;
 }
 
 /* Стили для заголовка и хлебных крошек */
