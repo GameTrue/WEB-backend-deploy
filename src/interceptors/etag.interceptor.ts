@@ -26,14 +26,21 @@ export class EtagInterceptor implements NestInterceptor {
         
         response.setHeader('ETag', `"${etag}"`);
 
-        const ifNoneMatch = request.headers['if-none-match'];
-        if (ifNoneMatch === `"${etag}"`) {
-          response.status(304);
-          return null;
-        }
+        
 
-        if (request.url.startsWith('/api/') || request.url.includes('/api/') || request.method === 'GET') {
+        if ((request.url.startsWith('/api/') || request.url.includes('/api/') || request.method === 'GET') && !request.url.includes("auth")) {
           response.setHeader('Cache-Control', 'public, max-age=10');
+
+          // const ifNoneMatch = request.headers['if-none-match'];
+          // if (ifNoneMatch === `"${etag}"`) {
+          //   response.status(304);
+          //   return null;
+          // }
+        }
+        else {
+            response.setHeader('Cache-Control', 'no-store');
+            response.setHeader('Pragma', 'no-cache');
+            response.setHeader('Expires', '0');
         }
 
         return data;
