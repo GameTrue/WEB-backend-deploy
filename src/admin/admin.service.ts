@@ -8,8 +8,8 @@ import { Enrollment, EnrollmentStatus } from '../enrollments/entities/enrollment
 import { Session } from '../auth/entities/session.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-import { CreateCategoryDto } from '../categories/dto/create-category.dto';
-import { UpdateCategoryDto } from '../categories/dto/update-category.dto';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Progress } from '../progress/entities/progress.entity';
 import { Submission } from '../submissions/entities/submission.entity';
 import { randomBytes, createHash } from 'crypto';

@@ -34,7 +34,3 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 .env
-BackUPDB.sql
-ERSchema2.png
-ERScheme.pgerd
-README.pdf

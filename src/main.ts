@@ -10,14 +10,11 @@ import { HttpExceptionFilter } from './filters/http-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { TimingInterceptor } from './interceptors/timing.interceptor';
 import { EtagInterceptor } from './interceptors/etag.interceptor';
-import { XmlResponseInterceptor } from './interceptors/xml-response.interceptor';
 
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  app.useGlobalInterceptors(new XmlResponseInterceptor());
-  
   // Настройка Swagger
   const config = new DocumentBuilder()
     .setTitle('Learning Platform API')
@@ -46,26 +43,6 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
 
-  Object.values(document.paths).forEach(path => {
-    Object.values(path as Record<string, any>).forEach(method => {
-      if (method.responses) {
-        Object.values(method.responses).forEach(response => {
-          const typedResponse = response as Record<string, any>;
-          if (typedResponse.content) {
-            typedResponse.content['application/xml'] = {
-              schema: {
-                type: 'object',
-                properties: {
-                  response: typedResponse.content['application/json'].schema
-                }
-              }
-            };
-          }
-        });
-      }
-    });
-  });
-  
   app.set('trust proxy', true) 
   
   // Добавляем документацию о ролях пользователей
@@ -110,8 +87,7 @@ async function bootstrap() {
   
   // Настройка статических файлов
   app.useStaticAssets(join(__dirname, '..', 'public'));
-
-  // Получение порта из переменных окружения или использования порта по умолчанию
+  // Получение порта из переменных окружения или использование порта по умолчанию
   const port = process.env.PORT || 3000;
   await app.listen(port);
   console.log(`Application is running on: ${await app.getUrl()}`);
