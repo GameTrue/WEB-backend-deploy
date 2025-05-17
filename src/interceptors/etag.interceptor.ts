@@ -21,14 +21,15 @@ export class EtagInterceptor implements NestInterceptor {
           return data;
         }
 
-        const dataString = JSON.stringify(data);
+        const acceptHeader = request.headers['accept'] || '';
+        const dataString = JSON.stringify(data) + acceptHeader;
         const etag = crypto.createHash('md5').update(dataString).digest('hex');
         
         response.setHeader('ETag', `"${etag}"`);
 
         
 
-        if ((request.url.startsWith('/api/') || request.url.includes('/api/') || request.method === 'GET') && !request.url.includes("auth")) {
+        if ((request.url.includes('/api/') || request.method === 'GET') && !request.url.includes("auth")) {
           response.setHeader('Cache-Control', 'public, max-age=10');
 
           // const ifNoneMatch = request.headers['if-none-match'];
