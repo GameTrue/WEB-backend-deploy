@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards, Req, NotFoundException, ParseUUIDPipe, Inject, forwardRef, Render } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards, Req, NotFoundException, ParseUUIDPipe, Inject, forwardRef, Render, UseInterceptors } from '@nestjs/common';
 import { Request } from 'express';
 import { AssignmentsService } from './assignments.service';
 import { CreateAssignmentDto } from './dto/create-assignment.dto';
@@ -9,7 +9,8 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/entities/user.entity';
 import { LessonsService } from '../lessons/lessons.service';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiSecurity, ApiExtraModels } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiSecurity, ApiExtraModels, ApiProduces } from '@nestjs/swagger';
+import { XmlResponseInterceptor } from '../interceptors/xml-response.interceptor';
 
 @ApiTags('assignments')
 @Controller('assignments')
@@ -96,7 +97,28 @@ export class AssignmentsController {
   @ApiOperation({ summary: 'Получить все задания урока', description: 'Возвращает все задания для указанного урока' })
   @ApiParam({ name: 'lessonId', description: 'ID урока' })
   @ApiSecurity('auth-token')
-  @ApiResponse({ status: 200, description: 'Список заданий успешно получен' })
+  @ApiProduces('application/json', 'application/xml')
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Список заданий успешно получен',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+        }
+      },
+      'application/xml': {
+        schema: {
+          type: 'object',
+          properties: {
+            response: {
+              type: 'array',
+            }
+          }
+        }
+      }
+    }
+  })
   @ApiResponse({ status: 401, description: 'Не авторизован' })
   async findAllByLesson(@Param('lessonId', ParseUUIDPipe) lessonId: string) {
     return this.assignmentsService.findAllByLesson(lessonId);
@@ -108,6 +130,7 @@ export class AssignmentsController {
   @ApiOperation({ summary: 'Просмотр задания', description: 'Отображает страницу просмотра задания' })
   @ApiParam({ name: 'id', description: 'ID задания' })
   @ApiSecurity('auth-token')
+  @ApiProduces('application/json', 'application/xml')
   @ApiResponse({ status: 200, description: 'Задание успешно найдено и отображено' })
   @ApiResponse({ status: 401, description: 'Не авторизован' })
   @ApiResponse({ status: 404, description: 'Задание не найдено или нет доступа' })
